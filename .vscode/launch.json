@@ -1,0 +1,21 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "WorkoutApiApplication",
+            "request": "launch",
+            "mainClass": "com.example.workout_api.WorkoutApiApplication",
+            "projectName": "workoutapi"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-WorkoutapiApplication<workoutapi>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "workoutapi.workoutapi.WorkoutapiApplication",
+            "projectName": "workoutapi",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
