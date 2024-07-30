@@ -1,4 +1,4 @@
-package com.example.workout_api.model;
+package com.example.workout_api.model.user;
 
 import java.util.List;
 

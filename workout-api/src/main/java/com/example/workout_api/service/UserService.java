@@ -1,12 +1,12 @@
 package com.example.workout_api.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.workout_api.model.User;
+import com.example.workout_api.exception.UserNotFoundException;
+import com.example.workout_api.model.user.User;
 import com.example.workout_api.repository.UserRepository;
 
 @Service
@@ -18,10 +18,10 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public Optional<User> modifyUser(String id, User updatedUser) {
+    public User modifyUser(String id, User updatedUser) throws Exception {
         User currentUser = userRepository.findById(id).orElse(null);
         if (currentUser == null) {
-            return Optional.empty();
+            throw new UserNotFoundException();
         }
 
         if (updatedUser.getUsername() != null)
@@ -35,6 +35,22 @@ public class UserService {
         if (updatedUser.getLastName() != null)
             currentUser.setLastName(updatedUser.getLastName());
 
-        return Optional.of(userRepository.save(currentUser));
+        return userRepository.save(currentUser);
+    }
+
+    public User findUserByUsername(String username) throws Exception {
+        User foundUser = userRepository.findByUsername(username).orElse(null);
+        if (foundUser == null) {
+            throw new UserNotFoundException();
+        }
+        return foundUser;
+    }
+
+    public User findUserById(String id) throws Exception {
+        User foundUser = userRepository.findById(id).orElse(null);
+        if (foundUser == null) {
+            throw new UserNotFoundException();
+        }
+        return foundUser;
     }
 }
