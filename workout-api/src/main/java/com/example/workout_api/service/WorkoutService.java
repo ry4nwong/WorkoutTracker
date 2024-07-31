@@ -27,7 +27,6 @@ public class WorkoutService {
         return newWorkout;
     }
 
-    // Can possibly implement a search algo to improve speed?
     public Workout modifyWorkout(String workoutId, Workout newWorkout) throws Exception {
         User currentUser = userRepository.findByWorkoutId(workoutId).orElse(null);
         if (currentUser != null) {

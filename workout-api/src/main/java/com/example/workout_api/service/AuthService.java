@@ -29,9 +29,9 @@ public class AuthService {
     public User verifyCredentials(String username, String password) throws Exception {
         Optional<User> foundUser = userRepository.findByUsername(username);
         if(foundUser.isPresent() && foundUser.get().getPassword().equals(password)) {
-            throw new InvalidCredentialsException();
-        } else {
             return foundUser.get();
+        } else {
+            throw new InvalidCredentialsException();
         }
     }
 }

@@ -36,7 +36,7 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         }
 
-        return ResponseEntity.ok(createdUser);
+        return ResponseEntity.ok(new LoginResponse(createdUser));
     }
     
     @PostMapping("/login")
