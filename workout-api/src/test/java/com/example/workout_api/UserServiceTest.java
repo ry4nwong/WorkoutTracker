@@ -40,7 +40,10 @@ public class UserServiceTest {
         updatedUser = new User();
         updatedUser.setId("12345678");
         updatedUser.setUsername("updateduser");
+        updatedUser.setPassword("password");
+        updatedUser.setEmail("test@test.com");
         updatedUser.setFirstName("Updated");
+        updatedUser.setLastName("User");
     }
 
     @Test
@@ -66,7 +69,7 @@ public class UserServiceTest {
     @Test
     void testFindUserByUsernameNotFound() throws Exception {
         when(userRepository.findByUsername("testuser")).thenReturn(Optional.empty());
-        assertThrows(UserNotFoundException.class, () -> userService.findUserById("testuser"));
+        assertThrows(UserNotFoundException.class, () -> userService.findUserByUsername("testuser"));
     }
 
     @Test
