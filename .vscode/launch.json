@@ -5,6 +5,13 @@
             "name": "WorkoutApiApplication",
             "request": "launch",
             "mainClass": "com.example.workout_api.WorkoutApiApplication",
+            "projectName": "workout-api"
+        },
+        {
+            "type": "java",
+            "name": "WorkoutApiApplication",
+            "request": "launch",
+            "mainClass": "com.example.workout_api.WorkoutApiApplication",
             "projectName": "workoutapi"
         },
         {
