@@ -15,8 +15,6 @@ The Workout Tracker is a comprehensive fitness management tool designed to help 
   - [Overview](#overview)
   - [Table of Contents](#table-of-contents)
   - [Features](#features)
-  - [Dependencies](#dependencies)
-  - [Installation](#installation)
 
 ## Features
 
@@ -47,7 +45,3 @@ The Workout Tracker is a comprehensive fitness management tool designed to help 
 - **Progress Tracking**
   - Monitor workout history and progress over time.
   - View summaries of workouts for future reference.
-
-## Dependencies
-
-## Installation
