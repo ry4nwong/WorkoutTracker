@@ -11,10 +11,19 @@ const LoginPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if(document.cookie !== '') {
-        navigate('/home');
+    if (document.cookie !== '') {
+      navigate('/home');
     }
   });
+
+  const setUserCookies = (data) => {
+    let now = new Date();
+    now.setTime(now.getTime() + (60 * 60 * 1000));
+    document.cookie = `username=${data.username};expires=${now.toUTCString()};path=/;SameSite=Strict`;
+    document.cookie = `id=${data.id};expires=${now.toUTCString()};path=/;SameSite=Strict`;
+    document.cookie = `email=${data.email};expires=${now.toUTCString()};path=/;SameSite=Strict`;
+    document.cookie = `name=${data.firstName} ${data.lastName};expires=${now.toUTCString()};path=/;SameSite=Strict`;
+  };
 
   const handleLogin = async () => {
     const response = await fetch('http://localhost:8080/api/auth/login', {
@@ -25,10 +34,7 @@ const LoginPage = () => {
 
     if (response.ok) {
       const data = await response.json();
-      const userId = data.id;
-      let now = new Date();
-      now.setTime(now.getTime() + (60 * 60 * 1000)); 
-      document.cookie = `id=${userId};expires=${now.toUTCString()};path=/;SameSite=Strict`;
+      setUserCookies(data);
       setAlertType('success');
       setAlertMessage('Success! Logging in...');
       setShowAlert(true);
@@ -95,6 +101,9 @@ const LoginPage = () => {
           <Button variant="outlined" color="primary" component={Link} to="/">
             Cancel
           </Button>
+        </Box>
+        <Box textAlign="center">
+          <Typography textAlign="center" component={Link} to="/register">Don't have an account? Create Account</Typography>
         </Box>
       </Paper>
     </Container>

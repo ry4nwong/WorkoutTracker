@@ -24,9 +24,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import com.example.workout_api.controller.WorkoutController;
 import com.example.workout_api.exception.UserNotFoundException;
 import com.example.workout_api.exception.WorkoutNotFoundException;
+import com.example.workout_api.model.exercise.Exercise;
 import com.example.workout_api.model.user.User;
-import com.example.workout_api.model.workout.CardioExercise;
-import com.example.workout_api.model.workout.WeightExercise;
 import com.example.workout_api.model.workout.Workout;
 import com.example.workout_api.service.WorkoutService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -56,10 +55,10 @@ public class WorkoutControllerTest {
         user.setLastName("User");
         user.setWorkouts(new ArrayList<>());
 
-        workout = new Workout("Test Workout", 130, 15000, new ArrayList<WeightExercise>(), new ArrayList<CardioExercise>());
+        workout = new Workout("Test Workout", 130, 15000, new ArrayList<Exercise>());
         workout.setId("1");
 
-        updatedWorkout = new Workout("Updated Workout", 145, 19000, new ArrayList<WeightExercise>(), new ArrayList<CardioExercise>());
+        updatedWorkout = new Workout("Updated Workout", 145, 19000, new ArrayList<Exercise>());
         updatedWorkout.setId("1");
 
         mockMvc = MockMvcBuilders.standaloneSetup(workoutController).build();

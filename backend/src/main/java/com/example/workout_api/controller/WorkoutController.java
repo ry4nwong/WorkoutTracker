@@ -12,7 +12,6 @@ import com.example.workout_api.exception.UserNotFoundException;
 import com.example.workout_api.exception.WorkoutNotFoundException;
 import com.example.workout_api.model.workout.Workout;
 import com.example.workout_api.service.WorkoutService;
-
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,10 +27,10 @@ public class WorkoutController {
     public WorkoutService workoutService;
 
     @PostMapping("/create/{username}")
-    public ResponseEntity<?> createWorkout(@PathVariable String username, @RequestBody Workout newWorkout) throws Exception {
+    public ResponseEntity<?> createWorkout(@PathVariable String username, @RequestBody Workout workoutRequest) throws Exception {
         Workout workout = null;
         try {
-            workout = workoutService.createWorkout(username, newWorkout);
+            workout = workoutService.createWorkout(username, workoutRequest);
         } catch(UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
@@ -40,10 +39,10 @@ public class WorkoutController {
     }
 
     @PatchMapping("/update/{workoutId}")
-    public ResponseEntity<?> modifyWorkout(@PathVariable String workoutId, @RequestBody Workout newWorkout) throws Exception {
+    public ResponseEntity<?> modifyWorkout(@PathVariable String workoutId, @RequestBody Workout workoutRequest) throws Exception {
         Workout workout = null;
         try {
-            workout = workoutService.modifyWorkout(workoutId, newWorkout);
+            workout = workoutService.modifyWorkout(workoutId, workoutRequest);
         } catch(UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch(WorkoutNotFoundException e) {
