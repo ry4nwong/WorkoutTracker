@@ -1,4 +1,4 @@
-package com.example.workout_api.model.workout;
+package com.example.workout_api.model.exercise;
 
 import lombok.Data;
 

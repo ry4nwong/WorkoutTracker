@@ -6,6 +6,8 @@ import java.util.UUID;
 
 import org.springframework.data.annotation.Id;
 
+import com.example.workout_api.model.exercise.Exercise;
+
 import lombok.Data;
 
 @Data
@@ -16,18 +18,16 @@ public class Workout implements Comparable<Workout> {
     private Date date;
     private long duration;
     private double totalVolumePounds;
-    private List<WeightExercise> weightExercises;
-    private List<CardioExercise> cardioExercises;
+    private List<Exercise> exercises;
 
     public Workout(String workoutName, long duration, int totalVolumePounds,
-            List<WeightExercise> weightExercises, List<CardioExercise> cardioExercises) {
+            List<Exercise> exercises) {
         this.id = UUID.randomUUID().toString();
         this.workoutName = workoutName;
         this.date = new Date();
         this.duration = duration;
         this.totalVolumePounds = totalVolumePounds;
-        this.weightExercises = weightExercises;
-        this.cardioExercises = cardioExercises;
+        this.exercises = exercises;
     }
 
     @Override
