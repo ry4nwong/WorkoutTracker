@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import { TextField } from '@mui/material';
 
-const NameInput = ({ nameType, setName }) => {
-    const [nameField, setNameField] = useState('');
-
+const NameInput = ({ nameType, setName, nameField }) => {
     return (
         <TextField
             label={nameType}
@@ -11,10 +9,8 @@ const NameInput = ({ nameType, setName }) => {
             value={nameField}
             onChange={(e) => {
                 setName(e.target.value);
-                setNameField(e.target.value);
             }}
             margin="normal"
-            fullWidth
         />
     );
 };

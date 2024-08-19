@@ -1,14 +1,24 @@
 import React, { useState } from 'react';
 import { TextField } from '@mui/material';
 
-const ConfirmPasswordInput = ({ sendConfirmPassword, currentPassword, sendConfirmPasswordError }) => {
-    const [confirmPassword, setConfirmPassword] = useState('');
-    const [confirmPasswordError, setConfirmPasswordError] = useState(false);
+const ConfirmPasswordInput = ({ sendConfirmPassword, currentPassword, confirmPasswordField, setValidConfirmPassword }) => {
+    const [color, setColor] = useState('');
     const [confirmPasswordErrorMessage, setConfirmPasswordErrorMessage] = useState('');
 
-    const updateConfirmPasswordError = (activateError) => {
-        setConfirmPasswordError(activateError);
-        sendConfirmPasswordError(activateError);
+    const handleChange = (e) => {
+        const newConfirmPassword = e.target.value;
+        sendConfirmPassword(newConfirmPassword);
+        setValidConfirmPassword(false);
+        setColor('');
+        setConfirmPasswordErrorMessage('');
+
+        if(newConfirmPassword === '' || newConfirmPassword !== currentPassword) {
+            setColor('error');
+            setConfirmPasswordErrorMessage('Passwords must match!');
+        } else {
+            setColor('success');
+            setValidConfirmPassword(true);
+        }
     };
 
     return (
@@ -16,21 +26,11 @@ const ConfirmPasswordInput = ({ sendConfirmPassword, currentPassword, sendConfir
             label="Confirm Password"
             variant="outlined"
             type="password"
-            value={confirmPassword}
-            onChange={(e) => {
-                setConfirmPassword(e.target.value);
-                if (e.target.value === '' || e.target.value !== currentPassword) {
-                    updateConfirmPasswordError(true);
-                    setConfirmPasswordErrorMessage('Passwords must match!')
-                } else {
-                    updateConfirmPasswordError(false);
-                    setConfirmPasswordErrorMessage('');
-                    sendConfirmPassword(e.target.value);
-                }
-            }}
+            value={confirmPasswordField}
+            onChange={handleChange}
             margin="normal"
             fullWidth
-            error={confirmPasswordError}
+            color={color}
             helperText={confirmPasswordErrorMessage}
             required
         />
