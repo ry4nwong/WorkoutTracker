@@ -10,7 +10,6 @@ import com.example.workout_api.model.workout.Workout;
 import com.example.workout_api.payload.request.RegistrationRequest;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Document(collection = "users")
 @Data
@@ -25,6 +24,7 @@ public class User {
     private String lastName;
     private List<Workout> workouts;
     private UserPreferences userPreferences;
+    private BodyData bodyData;
 
     public User(RegistrationRequest newUser) {
         this.username = newUser.getUsername();
@@ -33,7 +33,8 @@ public class User {
         this.firstName = newUser.getFirstName();
         this.lastName = newUser.getLastName();
         this.workouts = new LinkedList<>();
-        this.userPreferences = new UserPreferences();
+        this.userPreferences = newUser.getUserPreferences();
+        this.bodyData = newUser.getBodyData();
     }
 
     public User() {
