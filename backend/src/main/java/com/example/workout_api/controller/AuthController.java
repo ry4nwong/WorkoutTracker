@@ -18,6 +18,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
+
 
 
 @CrossOrigin(origins = "http://localhost:3000")
@@ -51,5 +57,23 @@ public class AuthController {
         }
         
         return ResponseEntity.ok(new LoginResponse(loggedUser));
+    }
+    
+    @GetMapping("/username/{username}")
+    public ResponseEntity<?> checkUsername(@PathVariable String username) {
+        if(authService.usernameExists(username)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(true);
+        } else {
+            return ResponseEntity.ok(false);
+        }
+    }
+    
+    @GetMapping("/email/{email}")
+    public ResponseEntity<?> checkEmail(@PathVariable String email) {
+        if(authService.emailExists(email)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(true);
+        } else {
+            return ResponseEntity.ok(false);
+        }
     }
 }

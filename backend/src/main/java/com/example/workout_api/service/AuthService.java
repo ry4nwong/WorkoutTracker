@@ -35,4 +35,14 @@ public class AuthService {
             throw new InvalidCredentialsException();
         }
     }
+
+    public boolean usernameExists(String username) {
+        Optional<User> existingUser = userRepository.findByUsername(username);
+        return existingUser.isPresent();
+    }
+
+    public boolean emailExists(String email) {
+        Optional<User> existingUser = userRepository.findByEmail(email);
+        return existingUser.isPresent();
+    }
 }

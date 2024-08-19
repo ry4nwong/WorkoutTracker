@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TextField, Button, Box, Typography, Alert } from '@mui/material';
+import { Button, Box, Typography } from '@mui/material';
 import UsernameInput from '../components/registration/UsernameInput';
 import PasswordInput from '../components/registration/PasswordInput';
 import EmailInput from '../components/registration/EmailInput';
@@ -11,18 +11,28 @@ const RegistrationPage = () => {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
 
-    const [showAlert, setShowAlert] = useState(false);
-    const [alertType, setAlertType] = useState('error');
-    const [alertMessage, setAlertMessage] = useState('');
+    const [validUsername, setValidUsername] = useState(false);
+    const [validEmail, setValidEmail] = useState(false);
+    const [validPassword, setValidPassword] = useState(false);
 
-    const [usernameError, setUsernameError] = useState(false);
-    const [emailError, setEmailError] = useState(false);
-    const [passwordError, setPasswordError] = useState(false);
-    const [confirmPasswordError, setConfirmPasswordError] = useState(false);
+    const [step, setStep] = useState(1);
+
+    const nextStep = () => {
+        setStep(step + 1);
+    };
+
+    const prevStep = () => {
+        setStep(step - 1);
+    };
+
+    const skipName = () => {
+        setFirstName('');
+        setLastName('');
+        setStep(step + 1);
+    }
 
     const navigate = useNavigate();
 
@@ -33,7 +43,7 @@ const RegistrationPage = () => {
         document.cookie = `id=${data.id};expires=${now.toUTCString()};path=/;SameSite=Strict`;
         document.cookie = `email=${data.email};expires=${now.toUTCString()};path=/;SameSite=Strict`;
         document.cookie = `name=${data.firstName} ${data.lastName};expires=${now.toUTCString()};path=/;SameSite=Strict`;
-      };
+    };
 
     const handleRegister = async (e) => {
         e.preventDefault();
@@ -54,49 +64,89 @@ const RegistrationPage = () => {
 
         if (response.ok) {
             const data = await response.json();
-            setAlertMessage('Registration successful!');
-            setAlertType('success');
-            setShowAlert(true);
             setUserCookies(data);
             setTimeout(() => {
                 navigate('/home');
-              }, 1000);
-        } else {
-            setAlertMessage('Registration failed!');
-            setAlertType('error');
-            setShowAlert(true);
+            }, 1000);
         }
-
     };
 
     return (
         <Box
-            sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 8 }}
+            sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '80vh' }}
             component="form"
             onSubmit={handleRegister}
         >
-            <Typography variant="h4" gutterBottom>
-                Register
-            </Typography>
-            {showAlert && (
-                <Alert severity={alertType} >{alertMessage}</Alert>
+
+            {step === 1 && (
+                <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                    <Typography variant="h4" gutterBottom sx={{ textAlign: 'center' }}>
+                        Welcome to Gainz!
+                    </Typography>
+                    <Typography variant="h7" gutterBottom>
+                        Let's get your account set up. Before we begin, what is your name?
+                    </Typography>
+                    <NameInput nameType="First Name" setName={setFirstName} nameField={firstName} />
+                    <NameInput nameType="Last Name" setName={setLastName} nameField={lastName} />
+                    <Button variant='contained' onClick={nextStep} disabled={firstName === '' || lastName === ''}>
+                        Next
+                    </Button>
+                    <Button onClick={skipName}>
+                        Skip
+                    </Button>
+                </Box>
             )}
-            <UsernameInput sendUsername={setUsername} sendUsernameError={setUsernameError} />
-            <EmailInput sendEmail={setEmail} sendEmailError={setEmailError} />
-            <PasswordInput sendPassword={setPassword} currentConfirmPassword={confirmPassword} sendPasswordError={setPasswordError} />
-            <ConfirmPasswordInput sendConfirmPassword={setConfirmPassword} currentPassword={password} sendConfirmPasswordError={setConfirmPasswordError}/>
-            <NameInput nameType="First Name" setName={setFirstName} />
-            <NameInput nameType="Last Name" setName={setLastName} />
-            <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                sx={{ mt: 2 }}
-                disabled={usernameError || emailError || passwordError || confirmPasswordError
-                    || username === '' || email === '' || password === '' || confirmPassword === ''}
-            >
-                Register
-            </Button>
+            {step === 2 && (
+                <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                    <Typography variant="h4" gutterBottom sx={{ textAlign: 'center' }}>
+                        Let's create a username for you!
+                    </Typography>
+                    <Typography variant="h7" gutterBottom>
+                        This will be your unique screen name for other users to find you.
+                    </Typography>
+                    <UsernameInput sendUsername={setUsername} setValidUsername={setValidUsername} usernameField={username} />
+                    <Button variant='contained' onClick={nextStep} disabled={!validUsername}>
+                        Next
+                    </Button>
+                    <Button onClick={prevStep}>
+                        Go Back
+                    </Button>
+                </Box>
+            )}
+            {step === 3 && (
+                <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                    <Typography variant="h4" gutterBottom sx={{ textAlign: 'center' }}>
+                        What's a good email?
+                    </Typography>
+                    <Typography variant="h7" gutterBottom>
+                        This will help you if you have forgotten your password. Your email is not shared with others.
+                    </Typography>
+                    <EmailInput sendEmail={setEmail} setValidEmail={setValidEmail} emailField={email} />
+                    <Button variant='contained' onClick={nextStep} disabled={!validEmail}>
+                        Next
+                    </Button>
+                    <Button onClick={prevStep}>
+                        Go Back
+                    </Button>
+                </Box>
+            )}
+            {step === 4 && (
+                <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                    <Typography variant="h4" gutterBottom sx={{ textAlign: 'center' }}>
+                        Finally, let's secure your account with a password!
+                    </Typography>
+                    <Typography variant="h7" gutterBottom>
+                        We recommend using a mix of letters, numbers, and symbols.
+                    </Typography>
+                    <PasswordInput sendPassword={setPassword} setValidPassword={setValidPassword} passwordField={password} />
+                    <Button variant='contained' onClick={handleRegister} disabled={!validPassword}>
+                        Create my account!
+                    </Button>
+                    <Button onClick={prevStep}>
+                        Go Back
+                    </Button>
+                </Box>
+            )}
         </Box>
     );
 };
