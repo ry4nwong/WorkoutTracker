@@ -55,10 +55,10 @@ public class WorkoutControllerTest {
         user.setLastName("User");
         user.setWorkouts(new ArrayList<>());
 
-        workout = new Workout("Test Workout", 130, 15000, new ArrayList<Exercise>());
+        workout = new Workout("Test Workout", "", 130, 15000, new ArrayList<Exercise>());
         workout.setId("1");
 
-        updatedWorkout = new Workout("Updated Workout", 145, 19000, new ArrayList<Exercise>());
+        updatedWorkout = new Workout("Updated Workout", "", 145, 19000, new ArrayList<Exercise>());
         updatedWorkout.setId("1");
 
         mockMvc = MockMvcBuilders.standaloneSetup(workoutController).build();

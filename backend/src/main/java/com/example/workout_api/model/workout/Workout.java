@@ -15,15 +15,17 @@ public class Workout implements Comparable<Workout> {
     @Id
     private String id;
     private String workoutName;
+    private String description;
     private Date date;
     private long duration;
     private double totalVolumePounds;
     private List<Exercise> exercises;
 
-    public Workout(String workoutName, long duration, int totalVolumePounds,
+    public Workout(String workoutName, String description, long duration, double totalVolumePounds,
             List<Exercise> exercises) {
         this.id = UUID.randomUUID().toString();
         this.workoutName = workoutName;
+        this.description = description;
         this.date = new Date();
         this.duration = duration;
         this.totalVolumePounds = totalVolumePounds;
