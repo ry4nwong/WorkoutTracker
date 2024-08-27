@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class CardioSet {
-    private long durationSeconds;
-    private double distanceMiles;
+    private int id;
+    private String duration;
+    private double distance;
 }
