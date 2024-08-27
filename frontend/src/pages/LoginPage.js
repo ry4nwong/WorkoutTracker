@@ -25,7 +25,9 @@ const LoginPage = () => {
     document.cookie = `name=${data.firstName} ${data.lastName};expires=${now.toUTCString()};path=/;SameSite=Strict`;
   };
 
-  const handleLogin = async () => {
+  const handleLogin = async (e) => {
+    e.preventDefault();
+
     const response = await fetch('http://localhost:8080/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -34,13 +36,13 @@ const LoginPage = () => {
 
     if (response.ok) {
       const data = await response.json();
-      setUserCookies(data);
       setAlertType('success');
       setAlertMessage('Success! Logging in...');
       setShowAlert(true);
+      setUserCookies(data);
       setTimeout(() => {
         navigate('/home');
-      }, 1000);
+      }, 5000);
     } else {
       setShowAlert(true);
     }

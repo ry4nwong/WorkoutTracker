@@ -3,7 +3,6 @@ import { Button, Box, Typography } from '@mui/material';
 import UsernameInput from '../components/registration/UsernameInput';
 import PasswordInput from '../components/registration/PasswordInput';
 import EmailInput from '../components/registration/EmailInput';
-import ConfirmPasswordInput from '../components/registration/ConfirmPasswordInput';
 import NameInput from '../components/registration/NameInput';
 import { useNavigate } from 'react-router-dom';
 

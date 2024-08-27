@@ -12,7 +12,7 @@ const HomePage = () => {
   });
 
   const createWorkout = () => {
-
+    navigate('/create');
   };
 
   const deleteUserCookies = () => {
@@ -48,7 +48,7 @@ const HomePage = () => {
         Create New Workout
       </Button>
 
-      <Button variant="outlined" color="secondary" onClick={logOut}>
+      <Button variant="outlined" onClick={logOut}>
         Log out
       </Button>
     </Container>
