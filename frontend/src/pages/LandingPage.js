@@ -8,7 +8,7 @@ const LandingPage = () => {
       <Container maxWidth="md" style={{ marginTop: '50px' }}>
         <Box textAlign="center" my={5}>
           <Typography variant="h2" component="h1" gutterBottom>
-            Welcome to Workout Tracker
+            Welcome to Gainz
           </Typography>
           <Typography variant="h5" component="h2" paragraph>
             A smarter way to track your progress.
