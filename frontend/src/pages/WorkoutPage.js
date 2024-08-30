@@ -1,9 +1,11 @@
-import { Alert, Box, Button, Dialog, DialogContent, DialogTitle, Grid, Snackbar, TextField, Typography } from "@mui/material";
+import { Alert, Box, Button, Container, Dialog, DialogContent, DialogTitle, Grid, Snackbar, TextField, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import ExerciseList from "../components/workout/ExerciseList";
 import CurrentExerciseList from "../components/workout/CurrentExerciseList";
 import WorkoutBar from "../components/workout/WorkoutBar";
+import { getCookie, validateCookies } from "../js/Cookies";
 import { useNavigate } from "react-router-dom";
+import FinishWorkoutPopup from "../components/workout/FinishWorkoutPopup";
 
 const WorkoutPage = () => {
     const [exerciseListVisibility, setExerciseListVisibility] = useState(false);
@@ -18,10 +20,11 @@ const WorkoutPage = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (document.cookie === '') {
+        if (validateCookies() === false) {
             navigate('/login');
             return;
         }
+
         const fetchExercises = async () => {
             const response = await fetch('http://localhost:8080/api/exercises/all')
                 .then(response => response.json())
@@ -31,15 +34,19 @@ const WorkoutPage = () => {
         fetchExercises();
     }, []);
 
+
+
     useEffect(() => {
         const handleBeforeUnload = (e) => {
             e.preventDefault();
             e.returnValue = '';
         };
 
+        window.addEventListener('pageswap', handleBeforeUnload);
         window.addEventListener('beforeunload', handleBeforeUnload);
         return () => {
             window.removeEventListener('beforeunload', handleBeforeUnload);
+            window.removeEventListener('pageswap', handleBeforeUnload);
         }
     }, []);
 
@@ -54,15 +61,7 @@ const WorkoutPage = () => {
         setTotalVolume(totalVolume + parseInt(newVolume));
     };
 
-    const getCookie = (name) => {
-        const value = `; ${document.cookie}`;
-        const parts = value.split(`; ${name}=`);
-        if (parts.length === 2) return parts.pop().split(';').shift();
-        return null;
-    }
-
     const finishWorkout = async () => {
-        // console.log(JSON.stringify(currentExercises));
         const response = await fetch(`http://localhost:8080/api/workouts/create/${getCookie('username')}`, {
             method: 'POST',
             headers: {
@@ -92,9 +91,8 @@ const WorkoutPage = () => {
     }
 
     return (
-        <div>
+        <Container sx={{m: 10}}>
             <WorkoutBar timer={timer} setTimer={setTimer} totalVolume={totalVolume} finishWorkout={openWorkoutFinished} />
-            <Box sx={{ height: '70px' }} />
             <Box
                 sx={{
                     display: 'flex',
@@ -113,38 +111,15 @@ const WorkoutPage = () => {
                 </Button>
             </Box>
 
-            <Dialog open={workoutFinished} fullWidth maxWidth="md">
-                <DialogTitle textAlign='center'>Finish Workout</DialogTitle>
-                <Box />
-                <DialogContent>
-                    <TextField 
-                        fullWidth 
-                        label="Workout Name" 
-                        onChange={(e) => setWorkoutName(e.target.value)} 
-                        required
-                        value={workoutName}
-                    />
-                </DialogContent>
-                <DialogContent>
-                    <TextField 
-                        fullWidth 
-                        label="Workout Description" 
-                        multiline rows={4}
-                        onChange={(e) => setWorkoutDescription(e.target.value)} 
-                        value={workoutDescription}
-                    />
-                </DialogContent>
-                <DialogContent>
-                    <Grid container spacing={2} justifyContent="center" alignItems="center">
-                        <Grid item>
-                            <Button fullWidth color="error" onClick={() => setWorkoutFinished(false)}>Cancel</Button>
-                        </Grid>
-                        <Grid item>
-                            <Button fullWidth variant='contained' onClick={finishWorkout}>Complete Workout</Button>
-                        </Grid>
-                    </Grid>
-                </DialogContent>
-            </Dialog>
+            <FinishWorkoutPopup 
+                workoutFinished={workoutFinished}
+                setWorkoutName={(e) => setWorkoutName(e)}
+                setWorkoutDescription={(e) => setWorkoutDescription(e)}
+                setWorkoutFinished={(e) => setWorkoutFinished(e)}
+                finishWorkout={finishWorkout}
+                workoutName={workoutName}
+                workoutDescription={workoutDescription}
+            />
 
             <Snackbar open={alertOpen} autoHideDuration={2000}>
                 <Alert severity="success" variant="filled">
@@ -158,7 +133,7 @@ const WorkoutPage = () => {
                 exerciseListVisibility={exerciseListVisibility}
                 setExerciseListVisibility={setExerciseListVisibility}
             />
-        </div>
+        </Container>
     );
 };
 

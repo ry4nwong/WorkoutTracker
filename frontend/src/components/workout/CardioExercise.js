@@ -63,7 +63,7 @@ const CardioExercise = ({ exercise, setExercise, removeExercise, index }) => {
                 processRowUpdate={(updatedRow) => handleRowEdit(updatedRow, exercise)}
                 onProcessRowUpdateError={(error) => console.log(error)}
                 disableColumnResize
-                sx={{ height: `${sets.length * 55 + 55}px` }}
+                getRowHeight={() => 'auto'}
             />
             <Box>
                 <Button

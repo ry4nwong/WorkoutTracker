@@ -7,7 +7,7 @@ const WorkoutBar = ({ timer, setTimer, totalVolume, finishWorkout }) => {
     const navigate = useNavigate();
 
     return (
-        <AppBar position="fixed" color="">
+        <AppBar position="fixed">
             <Toolbar>
                 <Typography variant="h6">Total Volume: {totalVolume} lbs</Typography>
                 <Box sx={{ flexGrow: 2 }} />
@@ -15,7 +15,7 @@ const WorkoutBar = ({ timer, setTimer, totalVolume, finishWorkout }) => {
                 <WorkoutTimer timer={timer} setTimer={setTimer} />
                 <Box sx={{ flexGrow: 1 }} />
 
-                <Button variant="outlined" color="error" onClick={() => navigate('/home')}>
+                <Button variant="contained" color="error" onClick={() => navigate('/home')}>
                     Discard Workout
                 </Button>
                 <Button variant="contained" onClick={finishWorkout}>
