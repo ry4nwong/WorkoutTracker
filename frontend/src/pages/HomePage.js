@@ -1,56 +1,39 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Button, Container, Typography } from '@mui/material';
+import { Box, Button, Container, Typography } from '@mui/material';
+import { validateCookies } from '../js/Cookies';
+import HomeBar from '../components/home/HomeBar';
+import WorkoutFeed from '../components/home/WorkoutFeed';
 
 const HomePage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (document.cookie === '') {
+    if (validateCookies() == false) {
       navigate('/login');
     }
-  });
-
-  const createWorkout = () => {
-    navigate('/create');
-  };
-
-  const deleteUserCookies = () => {
-    document.cookie = 'username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-    document.cookie = 'id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-    document.cookie = 'email=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-    document.cookie = 'name=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-  };
-
-  const logOut = () => {
-    deleteUserCookies();
-    setTimeout(() => {
-      navigate('/login');
-    }, 1000);
-  };
+  }, []);
 
   return (
-    <Container>
-      <Typography variant="h4" gutterBottom>
-        Welcome to Your Workout Tracker!
-      </Typography>
+    <Container sx={{alignItems: 'center'}}>
+      <HomeBar />
 
-      <Typography variant="body1" gutterBottom>
-        Manage your workouts, track your progress, and stay motivated!
-      </Typography>
-
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={createWorkout}
-        style={{ marginRight: '10px' }}
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          // height: 'calc(100vh - 70px)',
+          // textAlign: 'center',
+          width: '100%',
+          m: 10
+        }}
       >
-        Create New Workout
-      </Button>
+        <Typography variant='h5' sx={{m: 5}}>My Feed</Typography>
+        <WorkoutFeed />
+        <Typography textAlign="center" sx={{m: 10}}>No more feed to show!</Typography>
+      </Box>
 
-      <Button variant="outlined" onClick={logOut}>
-        Log out
-      </Button>
     </Container>
   );
 };
