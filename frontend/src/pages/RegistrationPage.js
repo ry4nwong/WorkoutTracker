@@ -5,6 +5,7 @@ import PasswordInput from '../components/registration/PasswordInput';
 import EmailInput from '../components/registration/EmailInput';
 import NameInput from '../components/registration/NameInput';
 import { useNavigate } from 'react-router-dom';
+import { setUserCookies } from '../js/Cookies';
 
 const RegistrationPage = () => {
     const [username, setUsername] = useState('');
@@ -18,6 +19,7 @@ const RegistrationPage = () => {
     const [validPassword, setValidPassword] = useState(false);
 
     const [step, setStep] = useState(1);
+    const navigate = useNavigate();
 
     const nextStep = () => {
         setStep(step + 1);
@@ -32,17 +34,6 @@ const RegistrationPage = () => {
         setLastName('');
         setStep(step + 1);
     }
-
-    const navigate = useNavigate();
-
-    const setUserCookies = (data) => {
-        let now = new Date();
-        now.setTime(now.getTime() + (60 * 60 * 1000));
-        document.cookie = `username=${data.username};expires=${now.toUTCString()};path=/;SameSite=Strict`;
-        document.cookie = `id=${data.id};expires=${now.toUTCString()};path=/;SameSite=Strict`;
-        document.cookie = `email=${data.email};expires=${now.toUTCString()};path=/;SameSite=Strict`;
-        document.cookie = `name=${data.firstName} ${data.lastName};expires=${now.toUTCString()};path=/;SameSite=Strict`;
-    };
 
     const handleRegister = async (e) => {
         e.preventDefault();

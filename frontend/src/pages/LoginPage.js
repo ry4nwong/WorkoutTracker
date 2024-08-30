@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Container, TextField, Button, Typography, Box, Paper, Alert } from '@mui/material';
+import { setUserCookies, validateCookies } from '../js/Cookies';
 
 const LoginPage = () => {
   const [username, setUsername] = useState('');
@@ -11,19 +12,10 @@ const LoginPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (document.cookie !== '') {
+    if (validateCookies() === true) {
       navigate('/home');
     }
-  });
-
-  const setUserCookies = (data) => {
-    let now = new Date();
-    now.setTime(now.getTime() + (60 * 60 * 1000));
-    document.cookie = `username=${data.username};expires=${now.toUTCString()};path=/;SameSite=Strict`;
-    document.cookie = `id=${data.id};expires=${now.toUTCString()};path=/;SameSite=Strict`;
-    document.cookie = `email=${data.email};expires=${now.toUTCString()};path=/;SameSite=Strict`;
-    document.cookie = `name=${data.firstName} ${data.lastName};expires=${now.toUTCString()};path=/;SameSite=Strict`;
-  };
+  }, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -35,14 +27,12 @@ const LoginPage = () => {
     });
 
     if (response.ok) {
-      const data = await response.json();
+      const data = await response.json()
+        .then(data => setUserCookies(data));
       setAlertType('success');
       setAlertMessage('Success! Logging in...');
       setShowAlert(true);
-      setUserCookies(data);
-      setTimeout(() => {
-        navigate('/home');
-      }, 5000);
+      setTimeout(() => navigate('/home'), 2000);
     } else {
       setShowAlert(true);
     }
@@ -104,7 +94,7 @@ const LoginPage = () => {
             Cancel
           </Button>
         </Box>
-        <Box textAlign="center">
+        <Box textAlign="center" sx={{ margin: 2 }}>
           <Typography textAlign="center" component={Link} to="/register">Don't have an account? Create Account</Typography>
         </Box>
       </Paper>

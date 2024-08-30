@@ -34,7 +34,7 @@ const WeightExercise = ({ exercise, setExercise, updateTotalVolume, removeExerci
     };
 
     return (
-        <Paper style={{ width: '100%' }} elevation={0}>
+        <Paper sx={{ width: '100%' }} elevation={0}>
             <Grid container>
                 <Grid item xs={11.5}>
                     <ListItemText primary={exercise.exerciseName} />
@@ -67,7 +67,7 @@ const WeightExercise = ({ exercise, setExercise, updateTotalVolume, removeExerci
                 processRowUpdate={(updatedRow) => handleRowEdit(updatedRow, exercise)}
                 onProcessRowUpdateError={(error) => console.log(error)}
                 disableColumnResize
-                sx={{ height: `${sets.length * 55 + 55}px` }}
+                autoHeight
             />
             <Box>
                 <Button
