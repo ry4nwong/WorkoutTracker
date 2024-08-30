@@ -1,5 +1,6 @@
 package com.example.workout_api.model.exercise;
 
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -20,6 +21,8 @@ import lombok.Data;
 })
 @Document(collection = "exercises")
 public class Exercise {
+    @Id
+    private String id;
     private String exerciseName;
     private String description;
 }
