@@ -17,7 +17,7 @@ const WorkoutFeed = () => {
     }, []);
 
     return (
-        <Paper elevation={0} sx={{ width: '100%' }}>
+        <Paper elevation={0} sx={{ width: '100%', bgcolor: 'background.default' }}>
             <List sx={{ width: '100%', alignItems: 'center' }}>
                 {feed.map((workout, index) => (
                     <ListItem key={workout.id} sx={{ width: '100%', display: 'flex', alignItems: 'center', mb: 4 }}>

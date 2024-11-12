@@ -34,7 +34,7 @@ const WeightExercise = ({ exercise, setExercise, updateTotalVolume, removeExerci
     };
 
     return (
-        <Paper sx={{ width: '100%' }} elevation={0}>
+        <Paper sx={{ width: '100%', bgcolor: 'background.default' }} elevation={0}>
             <Grid container>
                 <Grid item xs={11.5}>
                     <ListItemText primary={exercise.exerciseName} />

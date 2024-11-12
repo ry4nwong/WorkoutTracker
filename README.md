@@ -18,6 +18,9 @@
 
 The Workout Tracker is a comprehensive fitness management tool designed to help users plan, track, and optimize their workout routines.
 
+## Blog Posts
+[Building a Spring Boot Application with Maven and MongoDB](https://medium.com/@rnwong2002/building-a-spring-boot-application-with-maven-and-mongodb-integration-fb2247a96aef)
+
 ## Built With
 
 - [![Spring Boot](https://img.shields.io/badge/Spring-6DB33F?style=for-the-badge&logo=spring&logoColor=white)](https://docs.spring.io/spring-boot/index.html)
@@ -31,9 +34,9 @@ The Workout Tracker is a comprehensive fitness management tool designed to help 
   - User registration and login.
   - Password hashing with Bcrypt for enhanced security.
 
-- **User Profile Management**
+<!-- - **User Profile Management**
   - Update user profile information.
-  - Handle user-specific settings and preferences.
+  - Handle user-specific settings and preferences. -->
 
 - **Workout Management**
   - Create, update, view, and delete workouts.
@@ -90,3 +93,8 @@ Follow these steps to set up and run the project locally.
    cd WorkoutTracker/frontend
    npm start
    ```
+
+## Contact
+Ryan Wong - [LinkedIn](https://www.linkedin.com/in/ryanwong20) - rnwong2002@gmail.com
+
+Project Link: https://github.com/ry4nwong/WorkoutTracker

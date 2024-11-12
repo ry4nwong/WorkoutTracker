@@ -6,7 +6,6 @@ import EmailInput from '../components/registration/EmailInput';
 import NameInput from '../components/registration/NameInput';
 import { useNavigate } from 'react-router-dom';
 import { setUserCookies } from '../js/Cookies';
-import { hashPassword } from '../js/PasswordHash';
 
 const RegistrationPage = () => {
     const [username, setUsername] = useState('');
@@ -47,7 +46,7 @@ const RegistrationPage = () => {
             body: JSON.stringify({
                 username: username.toLowerCase(),
                 email: email.toLowerCase(),
-                password: hashPassword(password),
+                password: password,
                 firstName: firstName,
                 lastName: lastName
             })

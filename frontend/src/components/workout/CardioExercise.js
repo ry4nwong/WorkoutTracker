@@ -30,7 +30,7 @@ const CardioExercise = ({ exercise, setExercise, removeExercise, index }) => {
     };
 
     return (
-        <Paper style={{ width: '100%' }} elevation={0}>
+        <Paper sx={{ width: '100%', bgcolor: 'background.default' }} elevation={0}>
             <Grid container>
                 <Grid item xs={11.5}>
                     <ListItemText primary={exercise.exerciseName} />
@@ -41,7 +41,7 @@ const CardioExercise = ({ exercise, setExercise, removeExercise, index }) => {
                     </IconButton>
                 </Grid>
             </Grid>
-            <TextField label="Notes" style={{ width: '100%' }} onBlur={(e) => setDescription(e.target.value)}></TextField>
+            <TextField label="Notes" sx={{ width: '100%' }} onBlur={(e) => setDescription(e.target.value)}></TextField>
             <DataGrid
                 rows={sets}
                 columns={[

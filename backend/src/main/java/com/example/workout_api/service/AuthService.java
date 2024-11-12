@@ -2,6 +2,7 @@ package com.example.workout_api.service;
 
 import java.util.Optional;
 
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,13 +24,14 @@ public class AuthService {
         } else if (userRepository.existsByEmail(newUser.getEmail())) {
             throw new EmailAlreadyExistsException();
         }
-
+        
+        newUser.setPassword(BCrypt.hashpw(newUser.getPassword(), BCrypt.gensalt()));
         return userRepository.save(new User(newUser));
     }
 
     public User verifyCredentials(String username, String password) throws Exception {
         Optional<User> foundUser = userRepository.findByUsername(username);
-        if(foundUser.isPresent() && foundUser.get().getPassword().equals(password)) {
+        if(foundUser.isPresent() && BCrypt.checkpw(password, foundUser.get().getPassword())) {
             return foundUser.get();
         } else {
             throw new InvalidCredentialsException();
