@@ -22,14 +22,14 @@ const HomePage = () => {
         sx={{
           display: 'flex',
           flexDirection: 'column',
-          alignItems: 'center',
+          // alignItems: 'center',
           // height: 'calc(100vh - 70px)',
           // textAlign: 'center',
           width: '100%',
-          m: 10
+          // m: 5
         }}
       >
-        <Typography variant='h5' sx={{m: 5}}>My Feed</Typography>
+        <Typography textAlign="center" variant='h5' sx={{m: 5}}>My Feed</Typography>
         <WorkoutFeed />
         <Typography textAlign="center" sx={{m: 10}}>No more feed to show!</Typography>
       </Box>

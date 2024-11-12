@@ -5,8 +5,7 @@ import { Typography, Container, Button, Box } from '@mui/material';
 const LandingPage = () => {
   return (
     <div>
-      <Container maxWidth="md" style={{ marginTop: '50px' }}>
-        <Box textAlign="center" my={5}>
+        <Box textAlign="center" my={20}>
           <Typography variant="h2" component="h1" gutterBottom>
             Welcome to Gainz
           </Typography>
@@ -20,7 +19,6 @@ const LandingPage = () => {
             Register
           </Button>
         </Box>
-      </Container>
     </div>
   );
 };

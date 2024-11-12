@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Container, TextField, Button, Typography, Box, Paper, Alert } from '@mui/material';
 import { setUserCookies, validateCookies } from '../js/Cookies';
-import { hashPassword } from '../js/PasswordHash';
 
 const LoginPage = () => {
   const [username, setUsername] = useState('');
@@ -24,7 +23,7 @@ const LoginPage = () => {
     const response = await fetch('http://localhost:8080/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: username, password: hashPassword(password) })
+      body: JSON.stringify({ username: username, password: password })
     });
 
     if (response.ok) {
@@ -41,7 +40,7 @@ const LoginPage = () => {
 
   return (
     <Container maxWidth="sm">
-      <Paper elevation={3} style={{ padding: '30px', marginTop: '50px' }}>
+      <Paper elevation={3} sx={{ padding: '30px', marginTop: '50px' }}>
         <Box textAlign="center" mb={3}>
           <Typography variant="h4" component="h1">
             Login
