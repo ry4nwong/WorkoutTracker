@@ -3,30 +3,30 @@ import { createTheme } from "@mui/material";
 const theme = createTheme({
     palette: {
       primary: {
-        main: '#8EB695',
+        main: '#1976D2',
         contrastText: '#FFFFFF',
       },
       secondary: {
-        main: '#B3A394',
+        main: '#64B5F6',
         contrastText: '#333333',
       },
       background: {
-        default: '#F2F2F2',
-        paper: '#E0E0E0',
+        default: '#333333',
+        paper: '#424242',
       },
       text: {
-        primary: '#333333',
-        secondary: '#666666',
+        primary: '#FFFFFF',
+        secondary: '#EEEEEE',
       },
       action: {
-        hover: '#D0E2D4',
-        selected: '#8EB695',
+        hover: '#1565C0',
+        selected: '#1976D2',
       },
     },
     typography: {
       fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
-      h1: { color: '#333333' },
-      body1: { color: '#666666' },
+      h1: { color: '#FFFFFF' },
+      body1: { color: '#FFFFFF' },
     },
   });
 

@@ -22,7 +22,7 @@ const HomeBar = () => {
     return (
         <Container>
             <AppBar position="fixed">
-                <Toolbar sx={{}}>
+                <Toolbar sx={{backgroundColor: '#333333'}}>
                     <Button variant="filled" sx={{ "&:hover": { backgroundColor: "transparent" } }} onClick={() => navigatePage('/home')}>
                         <Typography variant="h6">Gainz</Typography>
                     </Button>

@@ -19,22 +19,30 @@ const ExerciseList = ({ exercises, setChosenExercise, exerciseListVisibility, se
                 setExerciseListVisibility(false);
                 setSearch('');
             }}
-            sx={{ height: '70%', minHeight: '70%' }}
-        >
-            <DialogTitle textAlign='center' sx={{ bgcolor: '#ffffff' }}>Select an Exercise</DialogTitle>
+            sx={{
+                height: '70%',
+                minHeight: '70%',
+                '& .MuiDialog-paper': {
+                    overflowY: 'auto',
+                    '::-webkit-scrollbar': {
+                        display: 'none',
+                    },
+                }
+            }}
+                >
+            <DialogTitle textAlign='center'>Select an Exercise</DialogTitle>
             <Button
                 onClick={() => {
                     setExerciseListVisibility(false);
                     setSearch('');
                 }}
                 color="error"
-                sx={{ bgcolor: '#ffffff' }}
             >
                 Cancel
             </Button>
-            <TextField label="Search" value={search} onChange={e => searchExercise(e.target.value)} sx={{ bgcolor: '#ffffff' }}/>
-            <List sx={{ bgcolor: '#ffffff' }}>
-                <DialogContent sx={{ bgcolor: '#ffffff' }}>
+            <TextField label="Search" value={search} onChange={e => searchExercise(e.target.value)} />
+            <List>
+                <DialogContent>
                     {(search === '' ? exercises : searchedExercises).map((exercise) => (
                         <ListItem key={exercise.exerciseName}>
                             <ListItemButton onClick={() => {
@@ -48,7 +56,7 @@ const ExerciseList = ({ exercises, setChosenExercise, exerciseListVisibility, se
 
                 </DialogContent>
             </List>
-        </Dialog>
+        </Dialog >
     );
 };
 
