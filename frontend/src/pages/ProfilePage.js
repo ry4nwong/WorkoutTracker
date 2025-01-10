@@ -31,8 +31,8 @@ const ProfilePage = () => {
                             <Grid item>
                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                                     <Typography variant="h7">0 Workouts Completed</Typography>
-                                    <Typography variant="h7" component={Link}>0 Followers</Typography>
-                                    <Typography variant="h7" component={Link}>0 Following</Typography>
+                                    <Button variant="h7" component={Link}>0 Followers</Button>
+                                    <Button variant="h7" component={Link}>0 Following</Button>
                                 </Box>
                             </Grid>
                             <Grid item>

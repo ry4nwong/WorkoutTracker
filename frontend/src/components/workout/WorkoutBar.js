@@ -8,7 +8,7 @@ const WorkoutBar = ({ timer, setTimer, totalVolume, finishWorkout }) => {
 
     return (
         <AppBar position="fixed">
-            <Toolbar>
+            <Toolbar sx={{backgroundColor: '#333333'}}>
                 <Typography variant="h6">Total Volume: {totalVolume} lbs</Typography>
                 <Box sx={{ flexGrow: 2 }} />
 
