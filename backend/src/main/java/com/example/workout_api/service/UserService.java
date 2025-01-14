@@ -1,13 +1,24 @@
 package com.example.workout_api.service;
 
 import java.util.List;
+import java.util.Optional;
 
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.workout_api.exception.EmailAlreadyExistsException;
+import com.example.workout_api.exception.InvalidCredentialsException;
 import com.example.workout_api.exception.UserNotFoundException;
+import com.example.workout_api.exception.UsernameAlreadyExistsException;
+import com.example.workout_api.model.user.BodyData;
 import com.example.workout_api.model.user.User;
 import com.example.workout_api.model.user.UserPreferences;
+import com.example.workout_api.payload.user.BodyDataInput;
+import com.example.workout_api.payload.user.LoginInput;
+import com.example.workout_api.payload.user.PreferencesInput;
+import com.example.workout_api.payload.user.ProfileInput;
+import com.example.workout_api.payload.user.UserInput;
 import com.example.workout_api.repository.UserRepository;
 
 @Service
@@ -15,28 +26,38 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    public List<User> getAll() {
-        return userRepository.findAll();
+    public User createUser(UserInput newUser) throws Exception {
+        if(userRepository.existsByUsername(newUser.getUsername())) {
+            throw new UsernameAlreadyExistsException();
+        } else if (userRepository.existsByEmail(newUser.getEmail())) {
+            throw new EmailAlreadyExistsException();
+        }
+        
+        newUser.setPassword(BCrypt.hashpw(newUser.getPassword(), BCrypt.gensalt()));
+        return userRepository.save(new User(newUser));
     }
 
-    public User modifyUser(String id, User updatedUser) throws Exception {
-        User currentUser = userRepository.findById(id).orElse(null);
-        if (currentUser == null) {
-            throw new UserNotFoundException();
+    public User verifyCredentials(LoginInput loginInput) throws Exception {
+        Optional<User> foundUser = userRepository.findByUsername(loginInput.getUsername());
+        if(foundUser.isPresent() && BCrypt.checkpw(loginInput.getPassword(), foundUser.get().getPassword())) {
+            return foundUser.get();
+        } else {
+            throw new InvalidCredentialsException();
         }
+    }
 
-        if (updatedUser.getUsername() != null)
-            currentUser.setUsername(updatedUser.getUsername());
-        if (updatedUser.getEmail() != null)
-            currentUser.setEmail(updatedUser.getEmail());
-        if (updatedUser.getPassword() != null)
-            currentUser.setPassword(updatedUser.getPassword());
-        if (updatedUser.getFirstName() != null)
-            currentUser.setFirstName(updatedUser.getFirstName());
-        if (updatedUser.getLastName() != null)
-            currentUser.setLastName(updatedUser.getLastName());
+    public boolean usernameExists(String username) {
+        Optional<User> existingUser = userRepository.findByUsername(username);
+        return existingUser.isPresent();
+    }
 
-        return userRepository.save(currentUser);
+    public boolean emailExists(String email) {
+        Optional<User> existingUser = userRepository.findByEmail(email);
+        return existingUser.isPresent();
+    }
+
+    public List<User> getAll() {
+        return userRepository.findAll();
     }
 
     public User findUserByUsername(String username) throws Exception {
@@ -55,12 +76,47 @@ public class UserService {
         return foundUser;
     }
 
-    public User updateUserPreferences(String id, UserPreferences updatedPreferences) throws Exception {
+    public User updateUserPreferences(String id, PreferencesInput updatedPreferences) throws Exception {
         User foundUser = userRepository.findById(id).orElse(null);
         if (foundUser == null) {
             throw new UserNotFoundException();
         }
-        foundUser.setUserPreferences(updatedPreferences);
+        UserPreferences newPreferences = new UserPreferences(updatedPreferences);
+        foundUser.setUserPreferences(newPreferences);
         return userRepository.save(foundUser);
+    }
+
+    public User updateProfile(String id, ProfileInput updatedProfile) throws Exception {
+        User foundUser = userRepository.findById(id).orElse(null);
+        if (foundUser == null) {
+            throw new UserNotFoundException();
+        }
+        foundUser.setFirstName(updatedProfile.getFirstName());
+        foundUser.setLastName(updatedProfile.getLastName());
+        foundUser.setUsername(updatedProfile.getUsername());
+        foundUser.setEmail(updatedProfile.getEmail());
+        foundUser.setBiography(updatedProfile.getBiography());
+        return userRepository.save(foundUser);
+    }
+
+    public User updateBodyData(String id, BodyDataInput bodyDataInput) throws Exception {
+        User foundUser = userRepository.findById(id).orElse(null);
+        if (foundUser == null) {
+            throw new UserNotFoundException();
+        }
+        BodyData newBodyData = new BodyData();
+        newBodyData.setHeight(bodyDataInput.getHeight());
+        newBodyData.setWeight(bodyDataInput.getWeight());
+        foundUser.setBodyData(newBodyData);
+        return userRepository.save(foundUser);
+    }
+
+    public boolean deleteUser(String id) {
+        User foundUser = userRepository.findById(id).orElse(null);
+        if (foundUser == null) {
+            return false;
+        }
+        userRepository.delete(foundUser);
+        return true;
     }
 }

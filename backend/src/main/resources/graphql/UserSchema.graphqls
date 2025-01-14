@@ -1,0 +1,76 @@
+type User {
+  id: ID!
+  username: String
+  email: String
+  password: String
+  firstName: String
+  lastName: String
+  workouts: [Workout]
+  preferences: UserPreferences
+  bodyData: BodyData
+  biography: String
+}
+
+type UserPreferences {
+  isUsingMiles: Boolean
+  isUsingPounds: Boolean
+  isUsingInches: Boolean
+  isPrivateAccount: Boolean
+}
+
+type BodyData {
+  weight: Float
+  height: Float
+}
+
+extend type Query {
+  allUsers: [User]
+  user(id: ID!): User
+  userByUsername(username: String!): User
+  usernameExists(username: String!): Boolean
+  emailExists(email: String!): Boolean
+}
+
+type Mutation {
+  register(userInput: UserInput!): User
+  login(loginInput: LoginInput!): User
+  updateProfileInfo(id: ID!, profileInfo: ProfileInput!): User
+  updatePreferences(id: ID!, preferences: PreferencesInput!): User
+  updateBodyData(id: ID!, bodyData: BodyDataInput!): User
+  delete(id: ID!): Boolean
+}
+
+input UserInput {
+  firstName: String!
+  lastName: String!
+  username: String!
+  email: String!
+  password: String!
+}
+
+input LoginInput {
+  username: String!
+  password: String!
+}
+
+input ProfileInput {
+  firstName: String!
+  lastName: String!
+  username: String!
+  email: String!
+  biography: String!
+}
+
+input PreferencesInput {
+  isUsingMiles: Boolean!
+  isUsingPounds: Boolean!
+  isUsingInches: Boolean!
+  isPrivateAccount: Boolean!
+}
+
+input BodyDataInput {
+  weight: Float!
+  height: Float!
+}
+
+

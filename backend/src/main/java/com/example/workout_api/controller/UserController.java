@@ -1,78 +1,80 @@
 package com.example.workout_api.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import java.util.List;
 
-import com.example.workout_api.exception.UserNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.MutationMapping;
+import org.springframework.graphql.data.method.annotation.QueryMapping;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
+
 import com.example.workout_api.model.user.User;
-import com.example.workout_api.model.user.UserPreferences;
+import com.example.workout_api.payload.user.BodyDataInput;
+import com.example.workout_api.payload.user.LoginInput;
+import com.example.workout_api.payload.user.PreferencesInput;
+import com.example.workout_api.payload.user.ProfileInput;
+import com.example.workout_api.payload.user.UserInput;
 import com.example.workout_api.service.UserService;
 
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-
-
-@RestController
-@RequestMapping("/api/users")
+@Controller
 public class UserController {
+
     @Autowired
-    private UserService userService;
+    public UserService userService;
 
-    @GetMapping("/all")
-    public ResponseEntity<?> getUsers() {
-        return ResponseEntity.ok(userService.getAll());
-    }
-    
-    @PatchMapping("/update/{id}")
-    public ResponseEntity<?> updateUser(@PathVariable String id, @RequestBody User updatedUser) throws Exception {
-        User userAfterUpdate = null;
-        try {
-            userAfterUpdate = userService.modifyUser(id, updatedUser);
-        } catch(UserNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
-        
-        return ResponseEntity.ok(userAfterUpdate);
+    @MutationMapping
+    public User register(@Argument UserInput userInput) throws Exception {
+        return userService.createUser(userInput);
     }
 
-    @PatchMapping("/update/preferences/{id}")
-    public ResponseEntity<?> updateUserPreferences(@PathVariable String id, @RequestBody UserPreferences preferences) throws Exception {
-        User userAfterUpdate = null;
-        try {
-            userAfterUpdate = userService.updateUserPreferences(id, preferences);
-        } catch(UserNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
-        
-        return ResponseEntity.ok(userAfterUpdate);
+    @MutationMapping
+    public User login(@Argument LoginInput loginInput) throws Exception {
+        return userService.verifyCredentials(loginInput);
     }
 
-    @GetMapping("/find/id/{id}")
-    public ResponseEntity<?> findUserById(@PathVariable String id) throws Exception {
-        User foundUser = null;
-        try {
-            foundUser = userService.findUserById(id);
-        } catch(UserNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
-        
-        return ResponseEntity.ok(foundUser);
+    @MutationMapping
+    public User updateProfileInfo(@Argument String id, @Argument ProfileInput profileInput) throws Exception {
+        return userService.updateProfile(id, profileInput);
     }
-    
-    @GetMapping("/find/username/{username}")
-    public ResponseEntity<?> findUserByUsername(@PathVariable String username) throws Exception {
-        User foundUser = null;
-        try {
-            foundUser = userService.findUserByUsername(username);
-        } catch(UserNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
-        
-        return ResponseEntity.ok(foundUser);
+
+    @MutationMapping
+    public User updatePreferences(@Argument String id, @Argument PreferencesInput preferencesInput) throws Exception {
+        return userService.updateUserPreferences(id, preferencesInput);
+    }
+
+    @MutationMapping
+    public User updateBodyData(@Argument String id, @Argument BodyDataInput bodyDataInput) throws Exception {
+        return userService.updateBodyData(id, bodyDataInput);
+    }
+
+    @MutationMapping
+    public boolean delete(@Argument String id) {
+        return userService.deleteUser(id);
+    }
+
+    @QueryMapping
+    public List<User> allUsers() {
+        return userService.getAll();
+    }
+
+    @QueryMapping
+    public User user(@Argument String id) throws Exception {
+        return userService.findUserById(id);
+    }
+
+    @QueryMapping
+    public User userByUsername(@Argument String username) throws Exception {
+        return userService.findUserByUsername(username);
+    }
+
+    @QueryMapping
+    public boolean usernameExists(@Argument String username) {
+        return userService.usernameExists(username);
+    }
+
+    @QueryMapping
+    public boolean emailExists(@Argument String email) {
+        return userService.emailExists(email);
     }
 }

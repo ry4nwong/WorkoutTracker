@@ -10,5 +10,11 @@ import lombok.Data;
 @Document(collection = "exercises")
 public class BodyweightExercise extends Exercise {
     private String muscleTargeted;
-    private List<Integer> sets;
+    private List<BodyweightSet> sets;
+
+    public BodyweightExercise(String id, String exerciseName, String description, String muscleTargeted, List<BodyweightSet> sets) {
+        super(id, exerciseName, description);
+        this.muscleTargeted = muscleTargeted;
+        this.sets = sets;
+    }
 }

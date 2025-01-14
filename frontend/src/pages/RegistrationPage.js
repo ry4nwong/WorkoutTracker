@@ -38,26 +38,45 @@ const RegistrationPage = () => {
     const handleRegister = async (e) => {
         e.preventDefault();
 
-        const response = await fetch('http://localhost:8080/api/auth/register', {
+        const response = await fetch('http://localhost:8080/graphql', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                username: username.toLowerCase(),
-                email: email.toLowerCase(),
-                password: password,
-                firstName: firstName,
-                lastName: lastName
-            })
+                query: `
+                    mutation Register($userInput: UserInput!) {
+                        register(userInput: $userInput) {
+                            id
+                        }
+                    }
+                `,
+                variables: {
+                    userInput: {
+                        username: username.toLowerCase(),
+                        email: email.toLowerCase(),
+                        password: password,
+                        firstName: firstName,
+                        lastName: lastName,
+                    },
+                },
+            }),
         });
 
         if (response.ok) {
             const data = await response.json();
-            setUserCookies(data);
-            setTimeout(() => {
-                navigate('/home');
-            }, 1000);
+            const userData = data?.data?.register;
+
+            if (userData) {
+                setUserCookies(userData);
+                setTimeout(() => {
+                    navigate('/home');
+                }, 1000);
+            } else {
+                console.error("Registration failed: ", data?.errors);
+            }
+        } else {
+            console.error("Error during the registration process");
         }
     };
 

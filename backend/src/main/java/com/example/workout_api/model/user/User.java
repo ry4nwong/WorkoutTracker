@@ -7,7 +7,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.example.workout_api.model.workout.Workout;
-import com.example.workout_api.payload.request.RegistrationRequest;
+import com.example.workout_api.payload.user.UserInput;
 
 import lombok.Data;
 
@@ -25,16 +25,18 @@ public class User {
     private List<Workout> workouts;
     private UserPreferences userPreferences;
     private BodyData bodyData;
+    private String biography;
 
-    public User(RegistrationRequest newUser) {
+    public User(UserInput newUser) {
         this.username = newUser.getUsername();
         this.email = newUser.getEmail();
         this.password = newUser.getPassword();
         this.firstName = newUser.getFirstName();
         this.lastName = newUser.getLastName();
         this.workouts = new LinkedList<>();
-        this.userPreferences = newUser.getUserPreferences();
-        this.bodyData = newUser.getBodyData();
+        this.userPreferences = new UserPreferences();
+        this.bodyData = new BodyData();
+        this.biography = "";
     }
 
     public User() {
@@ -45,5 +47,6 @@ public class User {
         this.lastName = null;
         this.workouts = null;
         this.userPreferences = null;
+        this.biography = null;
     }
 }

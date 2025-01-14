@@ -9,6 +9,7 @@ import com.example.workout_api.exception.UserNotFoundException;
 import com.example.workout_api.exception.WorkoutNotFoundException;
 import com.example.workout_api.model.user.User;
 import com.example.workout_api.model.workout.Workout;
+import com.example.workout_api.payload.workout.WorkoutInput;
 import com.example.workout_api.repository.UserRepository;
 
 @Service
@@ -16,23 +17,25 @@ public class WorkoutService {
     @Autowired
     private UserRepository userRepository;
 
-    public Workout createWorkout(String username, Workout newWorkout) throws Exception {
-        User currentUser = userRepository.findByUsername(username).orElse(null);
+    public Workout createWorkout(String id, WorkoutInput workoutInput) throws Exception {
+        User currentUser = userRepository.findById(id).orElse(null);
         if (currentUser == null) {
             throw new UserNotFoundException();
         }
 
+        Workout newWorkout = new Workout(workoutInput);
         currentUser.getWorkouts().add(newWorkout);
         userRepository.save(currentUser);
         return newWorkout;
     }
 
-    public Workout modifyWorkout(String workoutId, Workout newWorkout) throws Exception {
+    public Workout modifyWorkout(String workoutId, WorkoutInput workoutInput) throws Exception {
         User currentUser = userRepository.findByWorkoutId(workoutId).orElse(null);
         if (currentUser != null) {
             for (int i = 0; i < currentUser.getWorkouts().size(); i++) {
                 Workout workout = currentUser.getWorkouts().get(i);
                 if (workout.getId().equals(workoutId)) {
+                    Workout newWorkout = new Workout(workoutInput);
                     currentUser.getWorkouts().set(i, newWorkout);
                     userRepository.save(currentUser);
                     return newWorkout;
@@ -74,8 +77,8 @@ public class WorkoutService {
         throw new UserNotFoundException();
     }
 
-    public List<Workout> findAllWorkouts(String username) throws Exception {
-        User currentUser = userRepository.findByUsername(username).orElse(null);
+    public List<Workout> findAllWorkouts(String id) throws Exception {
+        User currentUser = userRepository.findById(id).orElse(null);
         if (currentUser == null) {
             throw new UserNotFoundException();
         }

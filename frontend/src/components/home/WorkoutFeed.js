@@ -6,15 +6,83 @@ import { DataGrid } from "@mui/x-data-grid";
 const WorkoutFeed = () => {
     const [feed, setFeed] = useState([]);
 
+
     useEffect(() => {
         const fetchFeed = async () => {
-            const response = await fetch(`http://localhost:8080/api/workouts/all/${getCookie('username')}`)
-                .then(response => response.json())
-                .then(data => setFeed(data.reverse()));
+            const response = await fetch('http://localhost:8080/graphql', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    query: `
+                        query GetAllWorkouts($userId: ID!) {
+                            getAllWorkouts(userId: $userId) {
+                                id
+                                workoutName
+                                description
+                                duration
+                                date
+                                totalVolumePounds
+                                exercises {
+                                    ... on WeightExercise {
+                                        id
+                                        exerciseName
+                                        description
+                                        muscleTargeted
+                                        sets {
+                                            id
+                                            weight
+                                            reps
+                                        }
+                                    }
+                                    ... on CardioExercise {
+                                        id
+                                        exerciseName
+                                        description
+                                        sets {
+                                            id
+                                            duration
+                                            distance
+                                        }
+                                    }
+                                    ... on BodyweightExercise {
+                                        id
+                                        exerciseName
+                                        description
+                                        muscleTargeted
+                                        sets {
+                                            id
+                                            reps
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    `,
+                    variables: {
+                        userId: getCookie('id')
+                    },
+                }),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                const workouts = data?.data?.getAllWorkouts;
+
+                if (workouts) {
+                    setFeed(workouts.reverse()); // Reverse the array and update the feed
+                } else {
+                    console.error("Error fetching workouts:", data?.errors);
+                }
+            } else {
+                console.error("Network error while fetching workouts");
+            }
         };
 
         fetchFeed();
     }, []);
+
 
     return (
         <Paper elevation={0} sx={{ width: '100%', bgcolor: 'background.default' }}>

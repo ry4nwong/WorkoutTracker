@@ -27,22 +27,46 @@ const EmailInput = ({ sendEmail, setValidEmail, emailField }) => {
 
             debounceTimeout.current = setTimeout(() => {
                 if (newEmail) {
-                    CheckEmail(newEmail);
+                    checkEmail(newEmail);
                 }
             }, 1000);
         }  
     };
 
-    const CheckEmail = async (email) => {
-        const response = await fetch(`http://localhost:8080/api/auth/email/${email}`);
-        if(response.ok) {
-            setValidEmail(true);
-            setColor('success');
+    const checkEmail = async (email) => {
+        const response = await fetch('http://localhost:8080/graphql', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                query: `
+                    query EmailExists($email: String!) {
+                        emailExists(email: $email)
+                    }
+                `,
+                variables: {
+                    email: email,
+                },
+            }),
+        });
+    
+        if (response.ok) {
+            const data = await response.json();
+            const emailInUse = data?.data?.emailExists;
+    
+            if (!emailInUse) {
+                setValidEmail(true);
+                setColor('success');
+            } else {
+                setColor('error');
+                setEmailErrorMessage('Email already in use!');
+            }
         } else {
-            setColor('error');
-            setEmailErrorMessage('Email already in use!');
+            console.error('Error checking email availability');
         }
     };
+    
 
     return (
         <TextField

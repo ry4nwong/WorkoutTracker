@@ -18,6 +18,7 @@ const WorkoutPage = () => {
     const [workoutDescription, setWorkoutDescription] = useState('');
     const [alertOpen, setAlertOpen] = useState(false);
     const navigate = useNavigate();
+    const startTime = new Date();
 
     useEffect(() => {
         if (validateCookies() === false) {
@@ -26,10 +27,60 @@ const WorkoutPage = () => {
         }
 
         const fetchExercises = async () => {
-            const response = await fetch('http://localhost:8080/api/exercises/all')
-                .then(response => response.json())
-                .then(data => setExercises(data));
-        };
+            const response = await fetch('http://localhost:8080/graphql', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    query: `
+                        query GetAllExercises {
+                            allExercises {
+                                ... on WeightExercise {
+                                    id
+                                    exerciseName
+                                    description
+                                    muscleTargeted
+                                    sets {
+                                        id
+                                        weight
+                                        reps
+                                    }
+                                }
+                                ... on CardioExercise {
+                                    id
+                                    exerciseName
+                                    description
+                                    sets {
+                                        id
+                                        duration
+                                        distance
+                                    }
+                                }
+                                ... on BodyweightExercise {
+                                    id
+                                    exerciseName
+                                    description
+                                    muscleTargeted
+                                    sets {
+                                        id
+                                        reps
+                                    }
+                                }
+                            }
+                        }
+                    `
+                }),
+            });
+        
+            if (response.ok) {
+                const data = await response.json();
+                console.log(data);
+                setExercises(data?.data?.allExercises);
+            } else {
+                console.error("Error fetching exercises");
+            }
+        };        
 
         fetchExercises();
     }, []);
@@ -58,34 +109,121 @@ const WorkoutPage = () => {
     };
 
     const updateTotalVolume = (newVolume) => {
-        setTotalVolume(totalVolume + parseInt(newVolume));
+        setTotalVolume(totalVolume + parseFloat(newVolume));
     };
 
     const finishWorkout = async () => {
-        const response = await fetch(`http://localhost:8080/api/workouts/create/${getCookie('username')}`, {
+        const formattedExercises = currentExercises.map(exercise => {
+            const { exerciseType, ...rest } = exercise;
+    
+            if (exerciseType === 'weight') {
+                return {
+                    exerciseType: 'WEIGHT',
+                    weightExercise: {
+                        ...rest,
+                    },
+                };
+            } else if (exerciseType === 'cardio') {
+                return {
+                    exerciseType: 'CARDIO',
+                    cardioExercise: {
+                        ...rest,
+                    },
+                };
+            } else if (exerciseType === 'bodyweight') {
+                return {
+                    exerciseType: 'BODYWEIGHT',
+                    bodyweightExercise: {
+                        ...rest,
+                    },
+                };
+            } else {
+                throw new Error(`Unknown exercise type: ${exerciseType}`);
+            }
+        });
+
+        const response = await fetch('http://localhost:8080/graphql', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                workoutName: workoutName,
-                description: workoutDescription,
-                duration: timer,
-                totalVolumePounds: totalVolume,
-                exercises: currentExercises
-            })
+                query: `
+                    mutation CreateWorkout($userId: ID!, $workoutInput: WorkoutInput!) {
+                        createWorkout(userId: $userId, workoutInput: $workoutInput) {
+                            id
+                            workoutName
+                            description
+                            duration
+                            date
+                            totalVolumePounds
+                            exercises {
+                                ... on WeightExercise {
+                                    id
+                                    exerciseName
+                                    description
+                                    muscleTargeted
+                                    sets {
+                                        id
+                                        weight
+                                        reps
+                                    }
+                                }
+                                ... on CardioExercise {
+                                    id
+                                    exerciseName
+                                    description
+                                    sets {
+                                        id
+                                        duration
+                                        distance
+                                    }
+                                }
+                                ... on BodyweightExercise {
+                                    id
+                                    exerciseName
+                                    description
+                                    muscleTargeted
+                                    sets {
+                                        id
+                                        reps
+                                    }
+                                }
+                            }
+                        }
+                    }
+                `,
+                variables: {
+                    userId: getCookie('id'),
+                    workoutInput: {
+                        workoutName: workoutName,
+                        description: workoutDescription,
+                        date: startTime.toISOString(),
+                        duration: timer,
+                        totalVolumePounds: totalVolume,
+                        exercises: formattedExercises,
+                    },
+                },
+            }),
         });
-
+    
         if (response.ok) {
-            setTimeout(() => {
-                navigate('/home');
-            }, 2000);
-            setAlertOpen(true);
+            const data = await response.json();
+            const createdWorkout = data?.data?.createWorkout;
+    
+            if (createdWorkout) {
+                setTimeout(() => {
+                    navigate('/home');
+                }, 2000);
+                setAlertOpen(true);
+            } else {
+                console.error("Workout creation failed:", data?.errors);
+            }
         } else {
-            console.log("workout creation failed");
+            console.log("Network error while creating workout");
         }
     };
-
+    
     const openWorkoutFinished = () => {
         setWorkoutFinished(true);
     }

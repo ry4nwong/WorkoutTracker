@@ -1,0 +1,32 @@
+scalar DateTime
+
+type Workout {
+    id: ID!
+    workoutName: String
+    description: String
+    date: DateTime
+    duration: Int
+    totalVolumePounds: Float
+    exercises: [Exercise]
+}
+
+extend type Query {
+    getWorkout(workoutId: ID!): Workout
+    getAllWorkouts(userId: ID!): [Workout]
+}
+
+extend type Mutation {
+    createWorkout(userId: ID!, workoutInput: WorkoutInput!): Workout!
+    modifyWorkout(workoutId: ID!, workoutInput: WorkoutInput!): Workout!
+    deleteWorkout(workoutId: ID!): Boolean!
+}
+
+input WorkoutInput {
+    workoutName: String
+    description: String
+    date: String!
+    duration: Int!
+    totalVolumePounds: Float
+    exercises: [ExerciseInput!]!
+}
+

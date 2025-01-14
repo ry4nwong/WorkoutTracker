@@ -1,0 +1,68 @@
+interface Exercise {
+    id: ID!
+    exerciseName: String!
+    description: String
+}
+
+type WeightExercise implements Exercise {
+    id: ID!
+    exerciseName: String!
+    description: String
+    muscleTargeted: String
+    sets: [WeightSet]
+}
+
+type CardioExercise implements Exercise {
+    id: ID!
+    exerciseName: String!
+    description: String
+    sets: [CardioSet]
+}
+
+type BodyweightExercise implements Exercise {
+    id: ID!
+    exerciseName: String!
+    description: String
+    muscleTargeted: String
+    sets: [BodyweightSet]
+}
+
+type Query {
+    allExercises: [Exercise]
+}
+
+enum ExerciseType {
+    WEIGHT,
+    CARDIO,
+    BODYWEIGHT
+}
+
+input ExerciseInput {
+  exerciseType: ExerciseType!
+  weightExercise: WeightExerciseInput
+  cardioExercise: CardioExerciseInput
+  bodyweightExercise: BodyweightExerciseInput
+}
+
+input WeightExerciseInput {
+  id: ID!
+  exerciseName: String!
+  description: String
+  muscleTargeted: String!
+  sets: [WeightSetInput!]
+}
+
+input CardioExerciseInput {
+  id: ID!
+  exerciseName: String!
+  description: String
+  sets: [CardioSetInput!]
+}
+
+input BodyweightExerciseInput {
+  id: ID!
+  exerciseName: String!
+  description: String
+  muscleTargeted: String!
+  sets: [BodyweightSetInput!]
+}

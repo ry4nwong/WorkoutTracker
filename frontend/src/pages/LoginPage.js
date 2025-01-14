@@ -20,20 +20,45 @@ const LoginPage = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    const response = await fetch('http://localhost:8080/api/auth/login', {
+    const response = await fetch('http://localhost:8080/graphql', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: username, password: password })
+      body: JSON.stringify({
+        query: `
+          mutation Login($loginInput: LoginInput!) {
+            login(loginInput: $loginInput) {
+              id
+              firstName
+              lastName
+              username
+            }
+          }
+        `,
+        variables: {
+          loginInput: {
+            username: username,
+            password: password,
+          },
+        },
+      }),
     });
 
     if (response.ok) {
-      const data = await response.json()
-        .then(data => setUserCookies(data));
-      setAlertType('success');
-      setAlertMessage('Success! Logging in...');
-      setShowAlert(true);
-      setTimeout(() => navigate('/home'), 2000);
+      const data = await response.json();
+      const userData = data?.data?.login;
+
+      if (userData) {
+        setUserCookies(userData);
+        setAlertType('success');
+        setAlertMessage('Success! Logging in...');
+        setShowAlert(true);
+        setTimeout(() => navigate('/home'), 2000);
+      } else {
+        setShowAlert(true);
+      }
     } else {
+      setAlertType('error');
+      setAlertMessage('An error occurred. Please try again.');
       setShowAlert(true);
     }
   };
