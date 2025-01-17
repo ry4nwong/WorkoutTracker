@@ -3,6 +3,7 @@ package com.example.workout_api.model.exercise;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.example.workout_api.payload.exercise.ExerciseType;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
@@ -25,6 +26,7 @@ import lombok.Data;
 public class Exercise {
     @Id
     private String id;
+    private ExerciseType exerciseType;
     private String exerciseName;
     private String description;
 }

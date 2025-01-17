@@ -3,6 +3,7 @@ import { DataGrid } from '@mui/x-data-grid';
 import React, { useState } from "react";
 import WeightExercise from "./WeightExercise";
 import CardioExercise from "./CardioExercise";
+import BodyweightExercise from "./BodyweightExercise";
 
 const CurrentExerciseList = ({ currentExercises, setCurrentExercises, updateTotalVolume }) => {
 
@@ -17,25 +18,35 @@ const CurrentExerciseList = ({ currentExercises, setCurrentExercises, updateTota
     };
 
     return (
-        <List sx={{ width: '60%' }}>
+        <List sx={{ width: '70%' }}>
             {currentExercises.map((exercise, index) => (
                 <ListItem key={`${exercise.exerciseName}-${index}`}>
-                    {
-                        ('muscleTargeted' in exercise)
-                            ? <WeightExercise 
-                                exercise={exercise} 
-                                setExercise={(updatedExercise) => setExercise(updatedExercise)} 
-                                updateTotalVolume={updateTotalVolume} 
-                                removeExercise={(toRemove) => removeExercise(toRemove)}
-                                index={index}
-                            />
-                            : <CardioExercise 
-                                exercise={exercise} 
-                                setExercise={(updatedExercise) => setExercise(updatedExercise)}
-                                removeExercise={(toRemove) => removeExercise(toRemove)}
-                                index={index}
-                            />
-                    }
+                    {exercise.exerciseType === 'WEIGHT' && (
+                    <WeightExercise 
+                        exercise={exercise} 
+                        setExercise={(updatedExercise) => setExercise(updatedExercise)} 
+                        updateTotalVolume={updateTotalVolume} 
+                        removeExercise={(toRemove) => removeExercise(toRemove)} 
+                        index={index}
+                    />
+                )}
+                {exercise.exerciseType === 'CARDIO' && (
+                    <CardioExercise 
+                        exercise={exercise} 
+                        setExercise={(updatedExercise) => setExercise(updatedExercise)} 
+                        removeExercise={(toRemove) => removeExercise(toRemove)} 
+                        index={index}
+                    />
+                )}
+                {exercise.exerciseType === 'BODYWEIGHT' && (
+                    <BodyweightExercise 
+                        exercise={exercise} 
+                        setExercise={(updatedExercise) => setExercise(updatedExercise)} 
+                        updateTotalVolume={updateTotalVolume}
+                        removeExercise={(toRemove) => removeExercise(toRemove)} 
+                        index={index}
+                    />
+                )}
                 </ListItem>
             ))}
         </List>

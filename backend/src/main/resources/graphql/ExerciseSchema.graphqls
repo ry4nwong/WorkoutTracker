@@ -1,11 +1,13 @@
 interface Exercise {
     id: ID!
+    exerciseType: ExerciseType!
     exerciseName: String!
     description: String
 }
 
 type WeightExercise implements Exercise {
     id: ID!
+    exerciseType: ExerciseType!
     exerciseName: String!
     description: String
     muscleTargeted: String
@@ -14,6 +16,7 @@ type WeightExercise implements Exercise {
 
 type CardioExercise implements Exercise {
     id: ID!
+    exerciseType: ExerciseType!
     exerciseName: String!
     description: String
     sets: [CardioSet]
@@ -21,6 +24,7 @@ type CardioExercise implements Exercise {
 
 type BodyweightExercise implements Exercise {
     id: ID!
+    exerciseType: ExerciseType!
     exerciseName: String!
     description: String
     muscleTargeted: String

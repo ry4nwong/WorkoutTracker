@@ -24,7 +24,7 @@ const HomeBar = () => {
             <AppBar position="fixed">
                 <Toolbar sx={{backgroundColor: '#333333'}}>
                     <Button variant="filled" sx={{ "&:hover": { backgroundColor: "transparent" } }} onClick={() => navigatePage('/home')}>
-                        <Typography variant="h6">Gainz</Typography>
+                        <Typography variant="h6" sx={{fontWeight: "bold"}}>Gainz</Typography>
                     </Button>
                     <Box sx={{ flexGrow: 2 }} />
 
@@ -32,7 +32,7 @@ const HomeBar = () => {
                         variant="contained"
                         color="primary"
                         onClick={() => navigatePage('/create')}
-                        style={{ marginRight: '10px' }}
+                        sx={{ marginRight: '10px', fontWeight: "bold" }}
                     >
                         Create New Workout
                     </Button>

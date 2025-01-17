@@ -79,6 +79,11 @@ const UsernameInput = ({ sendUsername, setValidUsername, usernameField }) => {
             color={color}
             helperText={usernameErrorMessage}
             required
+            sx={{
+                '& .MuiOutlinedInput-root': {
+                    borderRadius: 2
+                }
+            }}
         />
     );
 };

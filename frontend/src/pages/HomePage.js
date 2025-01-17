@@ -15,7 +15,7 @@ const HomePage = () => {
   }, []);
 
   return (
-    <Container sx={{alignItems: 'center'}}>
+    <Container sx={{ alignItems: 'center' }}>
       <HomeBar />
 
       <Box
@@ -29,9 +29,9 @@ const HomePage = () => {
           // m: 5
         }}
       >
-        <Typography textAlign="center" variant='h5' sx={{m: 5}}>My Feed</Typography>
+        <Typography textAlign="center" variant='h5' sx={{ m: 3, fontWeight: "bold" }}>My Feed</Typography>
         <WorkoutFeed />
-        <Typography textAlign="center" sx={{m: 10}}>No more feed to show!</Typography>
+        <Typography textAlign="center" sx={{ m: 10 }}>No more feed to show!</Typography>
       </Box>
 
     </Container>

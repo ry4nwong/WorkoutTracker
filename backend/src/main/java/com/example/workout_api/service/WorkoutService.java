@@ -17,13 +17,13 @@ public class WorkoutService {
     @Autowired
     private UserRepository userRepository;
 
-    public Workout createWorkout(String id, WorkoutInput workoutInput) throws Exception {
-        User currentUser = userRepository.findById(id).orElse(null);
+    public Workout createWorkout(String userId, WorkoutInput workoutInput) throws Exception {
+        User currentUser = userRepository.findById(userId).orElse(null);
         if (currentUser == null) {
             throw new UserNotFoundException();
         }
 
-        Workout newWorkout = new Workout(workoutInput);
+        Workout newWorkout = new Workout(currentUser.getUsername(), workoutInput);
         currentUser.getWorkouts().add(newWorkout);
         userRepository.save(currentUser);
         return newWorkout;
@@ -35,7 +35,7 @@ public class WorkoutService {
             for (int i = 0; i < currentUser.getWorkouts().size(); i++) {
                 Workout workout = currentUser.getWorkouts().get(i);
                 if (workout.getId().equals(workoutId)) {
-                    Workout newWorkout = new Workout(workoutInput);
+                    Workout newWorkout = new Workout(currentUser.getUsername(), workoutInput);
                     currentUser.getWorkouts().set(i, newWorkout);
                     userRepository.save(currentUser);
                     return newWorkout;

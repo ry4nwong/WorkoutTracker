@@ -13,10 +13,10 @@ import com.example.workout_api.exception.UserNotFoundException;
 import com.example.workout_api.exception.UsernameAlreadyExistsException;
 import com.example.workout_api.model.user.BodyData;
 import com.example.workout_api.model.user.User;
-import com.example.workout_api.model.user.UserPreferences;
+import com.example.workout_api.model.user.Units;
 import com.example.workout_api.payload.user.BodyDataInput;
 import com.example.workout_api.payload.user.LoginInput;
-import com.example.workout_api.payload.user.PreferencesInput;
+import com.example.workout_api.payload.user.UnitsInput;
 import com.example.workout_api.payload.user.ProfileInput;
 import com.example.workout_api.payload.user.UserInput;
 import com.example.workout_api.repository.UserRepository;
@@ -76,13 +76,13 @@ public class UserService {
         return foundUser;
     }
 
-    public User updateUserPreferences(String id, PreferencesInput updatedPreferences) throws Exception {
+    public User updateUnits(String id, UnitsInput unitsInput) throws Exception {
         User foundUser = userRepository.findById(id).orElse(null);
         if (foundUser == null) {
             throw new UserNotFoundException();
         }
-        UserPreferences newPreferences = new UserPreferences(updatedPreferences);
-        foundUser.setUserPreferences(newPreferences);
+        Units newUnits = new Units(unitsInput);
+        foundUser.setUnits(newUnits);
         return userRepository.save(foundUser);
     }
 

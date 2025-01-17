@@ -80,6 +80,11 @@ const EmailInput = ({ sendEmail, setValidEmail, emailField }) => {
             color={color}
             helperText={emailErrorMessage}
             required
+            sx={{
+                '& .MuiOutlinedInput-root': {
+                    borderRadius: 2
+                }
+            }}
         />
     );
 };

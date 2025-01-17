@@ -38,6 +38,7 @@ const WorkoutPage = () => {
                             allExercises {
                                 ... on WeightExercise {
                                     id
+                                    exerciseType
                                     exerciseName
                                     description
                                     muscleTargeted
@@ -49,6 +50,7 @@ const WorkoutPage = () => {
                                 }
                                 ... on CardioExercise {
                                     id
+                                    exerciseType
                                     exerciseName
                                     description
                                     sets {
@@ -59,6 +61,7 @@ const WorkoutPage = () => {
                                 }
                                 ... on BodyweightExercise {
                                     id
+                                    exerciseType
                                     exerciseName
                                     description
                                     muscleTargeted
@@ -72,15 +75,15 @@ const WorkoutPage = () => {
                     `
                 }),
             });
-        
+
             if (response.ok) {
                 const data = await response.json();
-                console.log(data);
+                console.log(data?.data?.allExercises);
                 setExercises(data?.data?.allExercises);
             } else {
                 console.error("Error fetching exercises");
             }
-        };        
+        };
 
         fetchExercises();
     }, []);
@@ -103,7 +106,6 @@ const WorkoutPage = () => {
 
     const addChosenExercise = (exercise) => {
         let newExercise = structuredClone(exercise);
-        newExercise.exerciseType = 'muscleTargeted' in exercise ? "weight" : "cardio";
         currentExercises.push(newExercise);
         setExerciseListVisibility(false);
     };
@@ -115,26 +117,40 @@ const WorkoutPage = () => {
     const finishWorkout = async () => {
         const formattedExercises = currentExercises.map(exercise => {
             const { exerciseType, ...rest } = exercise;
-    
-            if (exerciseType === 'weight') {
+
+            if (exerciseType === 'WEIGHT') {
                 return {
                     exerciseType: 'WEIGHT',
                     weightExercise: {
                         ...rest,
+                        sets: rest.sets.map(set => ({
+                            ...set,
+                            reps: parseInt(set.reps, 10),
+                            weight: parseFloat(set.weight),
+                        })),
                     },
                 };
-            } else if (exerciseType === 'cardio') {
+            } else if (exerciseType === 'CARDIO') {
                 return {
                     exerciseType: 'CARDIO',
                     cardioExercise: {
                         ...rest,
+                        sets: rest.sets.map(set => ({
+                            ...set,
+                            duration: set.duration,
+                            distance: parseFloat(set.distance),
+                        })),
                     },
                 };
-            } else if (exerciseType === 'bodyweight') {
+            } else if (exerciseType === 'BODYWEIGHT') {
                 return {
                     exerciseType: 'BODYWEIGHT',
                     bodyweightExercise: {
                         ...rest,
+                        sets: rest.sets.map(set => ({
+                            ...set,
+                            reps: parseInt(set.reps, 10),
+                        })),
                     },
                 };
             } else {
@@ -155,41 +171,7 @@ const WorkoutPage = () => {
                             workoutName
                             description
                             duration
-                            date
                             totalVolumePounds
-                            exercises {
-                                ... on WeightExercise {
-                                    id
-                                    exerciseName
-                                    description
-                                    muscleTargeted
-                                    sets {
-                                        id
-                                        weight
-                                        reps
-                                    }
-                                }
-                                ... on CardioExercise {
-                                    id
-                                    exerciseName
-                                    description
-                                    sets {
-                                        id
-                                        duration
-                                        distance
-                                    }
-                                }
-                                ... on BodyweightExercise {
-                                    id
-                                    exerciseName
-                                    description
-                                    muscleTargeted
-                                    sets {
-                                        id
-                                        reps
-                                    }
-                                }
-                            }
                         }
                     }
                 `,
@@ -199,18 +181,18 @@ const WorkoutPage = () => {
                         workoutName: workoutName,
                         description: workoutDescription,
                         date: startTime.toISOString(),
-                        duration: timer,
-                        totalVolumePounds: totalVolume,
+                        duration: parseInt(timer),
+                        totalVolumePounds: parseFloat(totalVolume),
                         exercises: formattedExercises,
                     },
                 },
             }),
         });
-    
+
         if (response.ok) {
             const data = await response.json();
             const createdWorkout = data?.data?.createWorkout;
-    
+
             if (createdWorkout) {
                 setTimeout(() => {
                     navigate('/home');
@@ -223,33 +205,60 @@ const WorkoutPage = () => {
             console.log("Network error while creating workout");
         }
     };
-    
+
     const openWorkoutFinished = () => {
         setWorkoutFinished(true);
     }
 
     return (
-        <Container sx={{m: 10}}>
-            <WorkoutBar timer={timer} setTimer={setTimer} totalVolume={totalVolume} finishWorkout={openWorkoutFinished} />
+        <Container
+            sx={{
+                display: 'flex', // Makes the container a flexbox
+                flexDirection: 'column', // Stacks children vertically
+                justifyContent: 'flex-start', // Centers content vertically
+                alignItems: 'center', // Centers content horizontally
+                minHeight: '100vh', // Ensures the container takes up the full viewport height
+                marginY: 10, // Margin for spacing
+                maxWidth: '100%'
+            }}
+        >
+            <WorkoutBar
+                timer={timer}
+                setTimer={setTimer}
+                totalVolume={totalVolume}
+                finishWorkout={openWorkoutFinished}
+            />
             <Box
                 sx={{
                     display: 'flex',
                     flexDirection: 'column',
                     textAlign: 'center',
                     alignItems: 'center',
-                    gap: 2
+                    gap: 2,
+                    width: '80%', // Ensures it doesn't limit child centering
                 }}
             >
-                {currentExercises.length !== 0
-                    ? <CurrentExerciseList currentExercises={currentExercises} setCurrentExercises={setCurrentExercises} updateTotalVolume={(newVolume) => updateTotalVolume(newVolume)} />
-                    : <Typography sx={{ height: '30px', marginTop: 4 }}>No exercises logged yet! Add an exercise.</Typography>
-                }
-                <Button variant="contained" onClick={() => setExerciseListVisibility(true)} sx={{ width: '57%' }}>
+                {currentExercises.length !== 0 ? (
+                    <CurrentExerciseList
+                        currentExercises={currentExercises}
+                        setCurrentExercises={setCurrentExercises}
+                        updateTotalVolume={(newVolume) => updateTotalVolume(newVolume)}
+                    />
+                ) : (
+                    <Typography sx={{ height: '30px', marginTop: 4 }}>
+                        No exercises logged yet! Add an exercise.
+                    </Typography>
+                )}
+                <Button
+                    variant="contained"
+                    onClick={() => setExerciseListVisibility(true)}
+                    sx={{ width: '57%' }}
+                >
                     Add Exercise
                 </Button>
             </Box>
 
-            <FinishWorkoutPopup 
+            <FinishWorkoutPopup
                 workoutFinished={workoutFinished}
                 setWorkoutName={(e) => setWorkoutName(e)}
                 setWorkoutDescription={(e) => setWorkoutDescription(e)}

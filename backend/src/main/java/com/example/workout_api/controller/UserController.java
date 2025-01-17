@@ -7,12 +7,11 @@ import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
 
 import com.example.workout_api.model.user.User;
 import com.example.workout_api.payload.user.BodyDataInput;
 import com.example.workout_api.payload.user.LoginInput;
-import com.example.workout_api.payload.user.PreferencesInput;
+import com.example.workout_api.payload.user.UnitsInput;
 import com.example.workout_api.payload.user.ProfileInput;
 import com.example.workout_api.payload.user.UserInput;
 import com.example.workout_api.service.UserService;
@@ -39,8 +38,8 @@ public class UserController {
     }
 
     @MutationMapping
-    public User updatePreferences(@Argument String id, @Argument PreferencesInput preferencesInput) throws Exception {
-        return userService.updateUserPreferences(id, preferencesInput);
+    public User updateUnits(@Argument String id, @Argument UnitsInput unitsInput) throws Exception {
+        return userService.updateUnits(id, unitsInput);
     }
 
     @MutationMapping

@@ -23,9 +23,10 @@ public class User {
     private String firstName;
     private String lastName;
     private List<Workout> workouts;
-    private UserPreferences userPreferences;
+    private Units units;
     private BodyData bodyData;
     private String biography;
+    private Boolean isPrivateAccount;
 
     public User(UserInput newUser) {
         this.username = newUser.getUsername();
@@ -34,9 +35,10 @@ public class User {
         this.firstName = newUser.getFirstName();
         this.lastName = newUser.getLastName();
         this.workouts = new LinkedList<>();
-        this.userPreferences = new UserPreferences();
+        this.units = new Units();
         this.bodyData = new BodyData();
         this.biography = "";
+        this.isPrivateAccount = false;
     }
 
     public User() {
@@ -46,7 +48,8 @@ public class User {
         this.firstName = null;
         this.lastName = null;
         this.workouts = null;
-        this.userPreferences = null;
+        this.units = null;
         this.biography = null;
+        this.isPrivateAccount = false;
     }
 }

@@ -2,7 +2,7 @@ import { MoreVertOutlined } from "@mui/icons-material";
 import { Box, Button, Dialog, DialogTitle, Grid, IconButton, List, ListItem, ListItemButton, ListItemText, Paper, TextField, Table, TableContainer, TableHead, TableRow, TableCell, TableBody, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 
-const WeightExercise = ({ exercise, setExercise, updateTotalVolume, removeExercise, index }) => {
+const BodyweightExercise = ({ exercise, setExercise, updateTotalVolume, removeExercise, index }) => {
     const [sets, setSets] = useState(exercise.sets);
     const [description, setDescription] = useState(exercise.description);
     const [showSettings, setShowSettings] = useState(false);
@@ -12,8 +12,7 @@ const WeightExercise = ({ exercise, setExercise, updateTotalVolume, removeExerci
     useEffect(() => setExercise({ ...exercise, description: description }), [description]);
 
     const handleAddSet = () => {
-        setSets(prevSets => [...prevSets, { id: sets.length + 1, weight: '0', reps: '0' }]);
-        console.log(exercise);
+        setSets(prevSets => [...prevSets, { id: sets.length + 1, reps: '0' }]);
     };
 
     const handleRemoveSet = (setId) => {
@@ -27,7 +26,7 @@ const WeightExercise = ({ exercise, setExercise, updateTotalVolume, removeExerci
 
     const handleRowEdit = (updatedRow) => {
         const oldRow = sets.find((set) => set.id === updatedRow.id);
-        updateTotalVolume((updatedRow.weight * updatedRow.reps) - (oldRow.weight * oldRow.reps));
+        updateTotalVolume((100 * updatedRow.reps) - (100 * oldRow.reps));
         setSets(prevSets => prevSets.map((set) => set.id === updatedRow.id ? updatedRow : set));
         exercise.sets = sets;
         return updatedRow;
@@ -63,24 +62,12 @@ const WeightExercise = ({ exercise, setExercise, updateTotalVolume, removeExerci
                         </TableRow>
                         <TableRow sx={{ borderBottom: 'none' }}>
                             <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>Set</TableCell>
-                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>Weight (lbs)</TableCell>
                             <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>Reps</TableCell>
                             <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>Action</TableCell>
                         </TableRow>
                         {sets.map((set) => (
                             <TableRow key={set.id} sx={{ borderBottom: 'none' }}>
                                 <TableCell align="center" sx={{ borderBottom: 'none' }}>{set.id}</TableCell>
-                                <TableCell align="center" sx={{ borderBottom: 'none' }}>
-                                    <TextField
-                                        type="number"
-                                        value={set.weight}
-                                        sx={{ textAlign: 'center', '& input': { textAlign: 'center' } }}
-                                        variant="standard"
-                                        InputProps={{ inputProps: { min: 0 }, disableUnderline: true }}
-                                        onChange={(e) => handleRowEdit({ ...set, weight: e.target.value }, exercise)}
-                                        fullWidth
-                                    />
-                                </TableCell>
                                 <TableCell align="center" sx={{ borderBottom: 'none' }}>
                                     <TextField
                                         type="number"
@@ -122,4 +109,4 @@ const WeightExercise = ({ exercise, setExercise, updateTotalVolume, removeExerci
     )
 };
 
-export default WeightExercise;
+export default BodyweightExercise;

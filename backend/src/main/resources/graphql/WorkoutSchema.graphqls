@@ -2,6 +2,7 @@ scalar DateTime
 
 type Workout {
     id: ID!
+    username: String
     workoutName: String
     description: String
     date: DateTime

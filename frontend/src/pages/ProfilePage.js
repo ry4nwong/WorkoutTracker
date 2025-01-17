@@ -4,17 +4,70 @@ import { Box, Button, Container, Grid, TextField, Typography } from "@mui/materi
 import WorkoutFeed from "../components/home/WorkoutFeed";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { getCookie } from "../js/Cookies";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import ProfileEditor from "../components/profile/ProfileEditor";
 
 const ProfilePage = () => {
-    const name = getCookie('name');
-    const username = getCookie('username');
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [username, setUsername] = useState('');
+    const [biography, setBiography] = useState('');
+    const [totalWorkouts, setTotalWorkouts] = useState(0);
+    const [profileEditorOpen, setProfileEditorOpen] = useState(false);
+
+    useEffect(() => {
+        const fetchProfile = async () => {
+            const response = await fetch('http://localhost:8080/graphql', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    query: `
+                        query User($id: ID!) {
+                            user(id: $id) {
+                                username
+                                firstName
+                                lastName
+                                biography
+                                workouts {
+                                    id
+                                }
+                            }
+                        }
+                    `,
+                    variables: {
+                        id: getCookie('id')
+                    },
+                }),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                const user = data?.data?.user;
+
+                if (user) {
+                    console.log(user);
+                    setUsername(user.username);
+                    setFirstName(user.firstName);
+                    setLastName(user.lastName);
+                    setBiography(user.biography);
+                    setTotalWorkouts(user.workouts.length);
+                } else {
+                    console.error("Error fetching user:", data?.errors);
+                }
+            } else {
+                console.error("Network error while fetching user");
+            }
+        };
+
+        fetchProfile();
+    }, []);
 
     return (
         <Container>
             <HomeBar />
-
             <Box sx={{ m: 5, width: '100%' }}>
                 <Grid container spacing={2}>
                     <Grid item xs={3}>
@@ -24,22 +77,28 @@ const ProfilePage = () => {
                         <Grid container direction="column" spacing={1.5}>
                             <Grid item>
                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                    <Typography sx={{ fontWeight: 'bold' }} variant="h4">{name}</Typography>
+                                    <Typography sx={{ fontWeight: 'bold' }} variant="h4">{firstName + ' ' + lastName}</Typography>
                                     <Typography variant="h5" sx={{ fontWeight: 'normal' }}>@{username}</Typography>
                                 </Box>
                             </Grid>
                             <Grid item>
                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                                    <Typography variant="h7">0 Workouts Completed</Typography>
+                                    <Typography variant="h7">{totalWorkouts} Workouts Completed</Typography>
                                     <Button variant="h7" component={Link}>0 Followers</Button>
                                     <Button variant="h7" component={Link}>0 Following</Button>
                                 </Box>
                             </Grid>
                             <Grid item>
-                                <TextField fullWidth defaultValue="No Bio Yet" disabled/>
+                                <TextField 
+                                    fullWidth 
+                                    value={biography === '' ? "No Bio Yet" : biography}
+                                    disabled
+                                    variant="standard"
+                                    InputProps={{ disableUnderline: true }}
+                                />
                             </Grid>
                             <Grid item>
-                                <Button variant="contained" fullWidth>Edit Profile</Button>
+                                <Button variant="contained" fullWidth onClick={() => setProfileEditorOpen(true)}>Edit Profile</Button>
                             </Grid>
                         </Grid>
                     </Grid>
@@ -49,17 +108,20 @@ const ProfilePage = () => {
                 sx={{
                     display: 'flex',
                     flexDirection: 'column',
-                    // alignItems: 'center',
-                    // height: 'calc(100vh - 70px)',
-                    // textAlign: 'center',
                     width: '100%',
-                    // m: 5
                 }}
             >
                 <Typography textAlign="center" variant='h5' sx={{ m: 5 }}>My Workouts</Typography>
                 <WorkoutFeed />
             </Box>
-
+            <ProfileEditor 
+                oldUsername={username}
+                oldFirstName={firstName}
+                oldLastName={lastName}
+                oldBiography={biography}
+                profileEditorOpen={profileEditorOpen}
+                setProfileEditorOpen={setProfileEditorOpen}
+            />
         </Container>
     )
 };

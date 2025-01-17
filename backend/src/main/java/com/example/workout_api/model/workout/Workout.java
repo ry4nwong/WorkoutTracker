@@ -28,6 +28,7 @@ import lombok.NoArgsConstructor;
 public class Workout implements Comparable<Workout> {
     @Id
     private String id;
+    private String username;
     private String workoutName;
     private String description;
     private String date;
@@ -35,9 +36,10 @@ public class Workout implements Comparable<Workout> {
     private double totalVolumePounds;
     private List<Exercise> exercises;
 
-    public Workout(String workoutName, String description, String date, int duration, double totalVolumePounds,
+    public Workout(String username, String workoutName, String description, String date, int duration, double totalVolumePounds,
             List<Exercise> exercises) {
         this.id = UUID.randomUUID().toString();
+        this.username = username;
         this.workoutName = workoutName;
         this.description = description;
         this.date = date;
@@ -46,8 +48,9 @@ public class Workout implements Comparable<Workout> {
         this.exercises = exercises;
     }
 
-    public Workout(WorkoutInput workoutInput) {
+    public Workout(String username, WorkoutInput workoutInput) {
         this.id = UUID.randomUUID().toString();
+        this.username = username;
         this.workoutName = workoutInput.getWorkoutName();
         this.description = workoutInput.getDescription();
         this.date = workoutInput.getDate();
@@ -64,6 +67,7 @@ public class Workout implements Comparable<Workout> {
                             WeightExerciseInput weightInput = input.getWeightExercise();
                             return new WeightExercise(
                                     weightInput.getId(),
+                                    input.getExerciseType(),
                                     weightInput.getExerciseName(),
                                     weightInput.getDescription(),
                                     weightInput.getMuscleTargeted(),
@@ -75,6 +79,7 @@ public class Workout implements Comparable<Workout> {
                             CardioExerciseInput cardioInput = input.getCardioExercise();
                             return new CardioExercise(
                                     cardioInput.getId(),
+                                    input.getExerciseType(),
                                     cardioInput.getExerciseName(),
                                     cardioInput.getDescription(),
                                     cardioInput.getSets().stream()
@@ -85,6 +90,7 @@ public class Workout implements Comparable<Workout> {
                             BodyweightExerciseInput bodyweightInput = input.getBodyweightExercise();
                             return new BodyweightExercise(
                                     bodyweightInput.getId(),
+                                    input.getExerciseType(),
                                     bodyweightInput.getExerciseName(),
                                     bodyweightInput.getDescription(),
                                     bodyweightInput.getMuscleTargeted(),

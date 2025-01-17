@@ -19,7 +19,7 @@ const WorkoutTimer = ({timer, setTimer}) => {
     };
 
     return (
-        <Typography variant="h6">
+        <Typography variant="body2" sx={{ fontWeight: 'bold', color: '#FFFFFF' }}>
             Workout Duration: {formatTime(timer)}
         </Typography>
     );

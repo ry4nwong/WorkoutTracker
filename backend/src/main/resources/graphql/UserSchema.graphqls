@@ -6,16 +6,16 @@ type User {
   firstName: String
   lastName: String
   workouts: [Workout]
-  preferences: UserPreferences
+  units: Units
   bodyData: BodyData
   biography: String
+  isPrivateAccount: Boolean
 }
 
-type UserPreferences {
+type Units {
   isUsingMiles: Boolean
   isUsingPounds: Boolean
   isUsingInches: Boolean
-  isPrivateAccount: Boolean
 }
 
 type BodyData {
@@ -34,15 +34,15 @@ extend type Query {
 type Mutation {
   register(userInput: UserInput!): User
   login(loginInput: LoginInput!): User
-  updateProfileInfo(id: ID!, profileInfo: ProfileInput!): User
-  updatePreferences(id: ID!, preferences: PreferencesInput!): User
-  updateBodyData(id: ID!, bodyData: BodyDataInput!): User
+  updateProfileInfo(id: ID!, profileInput: ProfileInput!): User
+  updateUnits(id: ID!, unitsInput: UnitsInput!): User
+  updateBodyData(id: ID!, bodyDataInput: BodyDataInput!): User
   delete(id: ID!): Boolean
 }
 
 input UserInput {
-  firstName: String!
-  lastName: String!
+  firstName: String
+  lastName: String
   username: String!
   email: String!
   password: String!
@@ -57,15 +57,13 @@ input ProfileInput {
   firstName: String!
   lastName: String!
   username: String!
-  email: String!
   biography: String!
 }
 
-input PreferencesInput {
+input UnitsInput {
   isUsingMiles: Boolean!
   isUsingPounds: Boolean!
   isUsingInches: Boolean!
-  isPrivateAccount: Boolean!
 }
 
 input BodyDataInput {
