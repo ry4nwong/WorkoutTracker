@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { deleteUserCookies } from "../../js/Cookies";
 
-const HomeBar = () => {
+const HomeBar = ({ setDarkMode }) => {
     const [anchorEl, setAnchorEl] = useState(null);
     const navigate = useNavigate();
 
@@ -16,15 +16,16 @@ const HomeBar = () => {
         deleteUserCookies();
         setTimeout(() => {
             navigate('/login');
+            setDarkMode(true);
         }, 1000);
     };
 
     return (
         <Container>
             <AppBar position="fixed">
-                <Toolbar sx={{backgroundColor: '#333333'}}>
+                <Toolbar sx={{ backgroundColor: 'background.default' }}>
                     <Button variant="filled" sx={{ "&:hover": { backgroundColor: "transparent" } }} onClick={() => navigatePage('/home')}>
-                        <Typography variant="h6" sx={{fontWeight: "bold"}}>Gainz</Typography>
+                        <Typography variant="h6" sx={{ fontWeight: "bold" }}>Gainz</Typography>
                     </Button>
                     <Box sx={{ flexGrow: 2 }} />
 

@@ -5,7 +5,7 @@ import { validateCookies } from '../js/Cookies';
 import HomeBar from '../components/home/HomeBar';
 import WorkoutFeed from '../components/home/WorkoutFeed';
 
-const HomePage = () => {
+const HomePage = ({ setDarkMode }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -16,7 +16,7 @@ const HomePage = () => {
 
   return (
     <Container sx={{ alignItems: 'center' }}>
-      <HomeBar />
+      <HomeBar setDarkMode={setDarkMode} />
 
       <Box
         sx={{

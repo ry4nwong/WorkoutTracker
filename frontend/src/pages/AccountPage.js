@@ -4,10 +4,11 @@ import HomeBar from "../components/home/HomeBar";
 import UnitsEditor from "../components/account/UnitsEditor";
 import AccountEditor from "../components/account/AccountEditor";
 import { getCookie } from "../js/Cookies";
+import ThemeEditor from "../components/account/ThemeEditor";
 
-const AccountPage = () => {
+const AccountPage = ({ darkMode, setDarkMode }) => {
     const [selectedMenu, setSelectedMenu] = useState("account");
-    const [units, setUnits] = useState({isUsingMiles: true, isUsingPounds: true, isUsingInches: true});
+    const [units, setUnits] = useState({ isUsingMiles: true, isUsingPounds: true, isUsingInches: true });
     const [email, setEmail] = useState("");
 
     useEffect(() => {
@@ -44,11 +45,10 @@ const AccountPage = () => {
                     setEmail(user.email);
                     const currentUnits = user.units;
                     setUnits({
-                        isUsingMiles: currentUnits.isUsingMiles, 
-                        isUsingPounds: currentUnits.isUsingPounds, 
+                        isUsingMiles: currentUnits.isUsingMiles,
+                        isUsingPounds: currentUnits.isUsingPounds,
                         isUsingInches: currentUnits.isUsingInches
                     });
-                    console.log(currentUnits);
                 } else {
                     console.error("Error fetching user:", data?.errors);
                 }
@@ -69,7 +69,7 @@ const AccountPage = () => {
 
     return (
         <Box sx={{ display: "flex", flexDirection: "column", height: "100vh", width: "100vw" }}>
-            <HomeBar />
+            <HomeBar setDarkMode={setDarkMode} />
 
             <Box sx={{ display: "flex", flex: 1 }}>
                 <Paper
@@ -127,13 +127,13 @@ const AccountPage = () => {
                         {(() => {
                             switch (selectedMenu) {
                                 case "account":
-                                    return <AccountEditor currentEmail={email}/>;
+                                    return <AccountEditor currentEmail={email} setCurrentEmail={setEmail} />;
                                 case "units":
-                                    return <UnitsEditor units={units}/>
+                                    return <UnitsEditor units={units} setUnits={setUnits} />
                                 case "bodyData":
                                     return "This is where body data content will be displayed.";
                                 case "appearance":
-                                    return "This is where appearance settings will be displayed.";
+                                    return <ThemeEditor darkMode={darkMode} setDarkMode={setDarkMode} />;
                                 default:
                                     return "";
                             }

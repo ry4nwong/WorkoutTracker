@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Container, TextField, Button, Typography, Box, Paper, Alert } from '@mui/material';
 import { setUserCookies, validateCookies } from '../js/Cookies';
 
-const LoginPage = () => {
+const LoginPage = ({ setDarkMode }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showAlert, setShowAlert] = useState(false);
@@ -28,9 +28,7 @@ const LoginPage = () => {
           mutation Login($loginInput: LoginInput!) {
             login(loginInput: $loginInput) {
               id
-              firstName
-              lastName
-              username
+              darkMode
             }
           }
         `,
@@ -52,7 +50,10 @@ const LoginPage = () => {
         setAlertType('success');
         setAlertMessage('Success! Logging in...');
         setShowAlert(true);
-        setTimeout(() => navigate('/home'), 2000);
+        setTimeout(() => {
+          navigate('/home');
+          setDarkMode(userData.darkMode);
+        }, 2000);
       } else {
         setShowAlert(true);
       }

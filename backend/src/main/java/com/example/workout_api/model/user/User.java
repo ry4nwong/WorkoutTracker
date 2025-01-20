@@ -27,6 +27,7 @@ public class User {
     private BodyData bodyData;
     private String biography;
     private Boolean isPrivateAccount;
+    private Boolean darkMode;
 
     public User(UserInput newUser) {
         this.username = newUser.getUsername();
@@ -39,6 +40,7 @@ public class User {
         this.bodyData = new BodyData();
         this.biography = "";
         this.isPrivateAccount = false;
+        this.darkMode = true;
     }
 
     public User() {
@@ -51,5 +53,6 @@ public class User {
         this.units = null;
         this.biography = null;
         this.isPrivateAccount = false;
+        this.darkMode = true;
     }
 }

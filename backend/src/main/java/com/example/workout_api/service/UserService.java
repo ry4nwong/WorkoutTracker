@@ -119,4 +119,40 @@ public class UserService {
         userRepository.delete(foundUser);
         return true;
     }
+
+    public User updateEmail(String id, String email) throws Exception {
+        User foundUser = userRepository.findById(id).orElse(null);
+        if (foundUser == null) {
+            throw new UserNotFoundException();
+        }
+        foundUser.setEmail(email);
+        return userRepository.save(foundUser);
+    }
+
+    public User updatePassword(String id, String password) throws Exception {
+        User foundUser = userRepository.findById(id).orElse(null);
+        if (foundUser == null) {
+            throw new UserNotFoundException();
+        }
+        foundUser.setPassword(BCrypt.hashpw(password, BCrypt.gensalt()));
+        return userRepository.save(foundUser);
+    }
+
+    public User updateDarkMode(String id, Boolean darkMode) throws Exception {
+        User foundUser = userRepository.findById(id).orElse(null);
+        if (foundUser == null) {
+            throw new UserNotFoundException();
+        }
+        foundUser.setDarkMode(darkMode);
+        return userRepository.save(foundUser);
+    }
+
+    public User updatePrivateAccount(String id, Boolean privateAccount) throws Exception {
+        User foundUser = userRepository.findById(id).orElse(null);
+        if (foundUser == null) {
+            throw new UserNotFoundException();
+        }
+        foundUser.setIsPrivateAccount(privateAccount);
+        return userRepository.save(foundUser);
+    }
 }

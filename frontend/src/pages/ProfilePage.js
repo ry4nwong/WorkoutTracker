@@ -8,7 +8,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import ProfileEditor from "../components/profile/ProfileEditor";
 
-const ProfilePage = () => {
+const ProfilePage = ({ setDarkMode }) => {
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [username, setUsername] = useState('');
@@ -48,7 +48,6 @@ const ProfilePage = () => {
                 const user = data?.data?.user;
 
                 if (user) {
-                    console.log(user);
                     setUsername(user.username);
                     setFirstName(user.firstName);
                     setLastName(user.lastName);
@@ -67,7 +66,7 @@ const ProfilePage = () => {
 
     return (
         <Container>
-            <HomeBar />
+            <HomeBar setDarkMode={setDarkMode} />
             <Box sx={{ m: 5, width: '100%' }}>
                 <Grid container spacing={2}>
                     <Grid item xs={3}>
@@ -89,8 +88,8 @@ const ProfilePage = () => {
                                 </Box>
                             </Grid>
                             <Grid item>
-                                <TextField 
-                                    fullWidth 
+                                <TextField
+                                    fullWidth
                                     value={biography === '' ? "No Bio Yet" : biography}
                                     disabled
                                     variant="standard"
@@ -114,7 +113,7 @@ const ProfilePage = () => {
                 <Typography textAlign="center" variant='h5' sx={{ m: 5 }}>My Workouts</Typography>
                 <WorkoutFeed />
             </Box>
-            <ProfileEditor 
+            <ProfileEditor
                 oldUsername={username}
                 oldFirstName={firstName}
                 oldLastName={lastName}

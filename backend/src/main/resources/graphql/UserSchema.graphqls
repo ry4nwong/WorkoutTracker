@@ -10,6 +10,7 @@ type User {
   bodyData: BodyData
   biography: String
   isPrivateAccount: Boolean
+  darkMode: Boolean
 }
 
 type Units {
@@ -37,7 +38,11 @@ type Mutation {
   updateProfileInfo(id: ID!, profileInput: ProfileInput!): User
   updateUnits(id: ID!, unitsInput: UnitsInput!): User
   updateBodyData(id: ID!, bodyDataInput: BodyDataInput!): User
+  updateEmail(id: ID!, email: String!): User
+  updatePassword(id: ID!, password: String!): User
   delete(id: ID!): Boolean
+  updateDarkMode(id: ID!, darkMode: Boolean!): User
+  updatePrivateAccount(id: ID!, privateAccount: Boolean!): User
 }
 
 input UserInput {

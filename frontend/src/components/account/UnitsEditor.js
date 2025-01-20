@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Alert, Box, Button, FormControl, InputLabel, MenuItem, Select, Snackbar } from "@mui/material";
 import { getCookie } from "../../js/Cookies";
 
-const UnitsEditor = ({ units }) => {
+const UnitsEditor = ({ units, setUnits }) => {
     const [weightUnit, setWeightUnit] = useState(units.isUsingPounds ? "lbs" : "kgs");
     const [lengthUnit, setLengthUnit] = useState(units.isUsingInches ? "in" : "cm");
     const [distanceUnit, setDistanceUnit] = useState(units.isUsingMiles ? "mi" : "km");
@@ -10,7 +10,6 @@ const UnitsEditor = ({ units }) => {
     const [alertOpen, setAlertOpen] = useState(false);
 
     const handleUnitChange = async () => {
-        console.log({weightUnit, lengthUnit, distanceUnit});
         const response = await fetch('http://localhost:8080/graphql', {
             method: 'POST',
             headers: {
@@ -44,6 +43,16 @@ const UnitsEditor = ({ units }) => {
             const updatedUnits = data?.data?.updateUnits;
 
             if (updatedUnits) {
+                const { isUsingMiles, isUsingInches, isUsingPounds } = updatedUnits.units;
+                setDistanceUnit(isUsingMiles ? "mi" : "km");
+                setLengthUnit(isUsingInches ? "in" : "cm");
+                setWeightUnit(isUsingPounds ? "lbs" : "kgs");
+                setUnits({
+                    isUsingMiles: isUsingMiles, 
+                    isUsingInches: isUsingInches, 
+                    isUsingPounds: isUsingPounds
+                });
+
                 setSettingsChanged(false);
                 setAlertOpen(true);
                 console.log(updatedUnits);

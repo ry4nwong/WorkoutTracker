@@ -76,4 +76,24 @@ public class UserController {
     public boolean emailExists(@Argument String email) {
         return userService.emailExists(email);
     }
+
+    @MutationMapping
+    public User updateEmail(@Argument String id, @Argument String email) throws Exception {
+        return userService.updateEmail(id, email);
+    }
+
+    @MutationMapping
+    public User updatePassword(@Argument String id, @Argument String password) throws Exception {
+        return userService.updatePassword(id, password);
+    }
+
+    @MutationMapping
+    public User updateDarkMode(@Argument String id, @Argument Boolean darkMode) throws Exception {
+        return userService.updateDarkMode(id, darkMode);
+    }
+
+    @MutationMapping
+    public User updatePrivateAccount(@Argument String id, @Argument Boolean privateAccount) throws Exception {
+        return userService.updatePrivateAccount(id, privateAccount);
+    }
 }
