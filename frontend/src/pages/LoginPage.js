@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Container, TextField, Button, Typography, Box, Paper, Alert } from '@mui/material';
-import { setUserCookies, validateCookies } from '../js/Cookies';
+import { setUserCookies, validateCookies } from '../utils/Cookies';
 
 const LoginPage = ({ setDarkMode }) => {
   const [username, setUsername] = useState('');

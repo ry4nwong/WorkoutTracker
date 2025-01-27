@@ -5,7 +5,7 @@ import PasswordInput from '../components/registration/PasswordInput';
 import EmailInput from '../components/registration/EmailInput';
 import NameInput from '../components/registration/NameInput';
 import { useNavigate } from 'react-router-dom';
-import { setUserCookies } from '../js/Cookies';
+import { setUserCookies } from '../utils/Cookies';
 
 const RegistrationPage = () => {
     const [username, setUsername] = useState('');

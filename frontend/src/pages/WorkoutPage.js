@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import ExerciseList from "../components/workout/ExerciseList";
 import CurrentExerciseList from "../components/workout/CurrentExerciseList";
 import WorkoutBar from "../components/workout/WorkoutBar";
-import { getCookie, validateCookies } from "../js/Cookies";
+import { getCookie, validateCookies } from "../utils/Cookies";
 import { useNavigate } from "react-router-dom";
 import FinishWorkoutPopup from "../components/workout/FinishWorkoutPopup";
 

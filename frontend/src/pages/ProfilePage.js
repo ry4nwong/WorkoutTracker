@@ -3,7 +3,7 @@ import HomeBar from "../components/home/HomeBar";
 import { Box, Button, Container, Grid, TextField, Typography } from "@mui/material";
 import WorkoutFeed from "../components/home/WorkoutFeed";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import { getCookie } from "../js/Cookies";
+import { getCookie } from "../utils/Cookies";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import ProfileEditor from "../components/profile/ProfileEditor";

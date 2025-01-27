@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Alert, Box, Button, Snackbar, TextField, Typography } from "@mui/material";
 import EmailInput from "../registration/EmailInput";
-import { getCookie } from "../../js/Cookies";
+import { getCookie } from "../../utils/Cookies";
 
 const AccountEditor = ({ currentEmail, setCurrentEmail }) => {
     const [email, setEmail] = useState(currentEmail);
@@ -140,6 +140,10 @@ const AccountEditor = ({ currentEmail, setCurrentEmail }) => {
             >
                 Save
             </Button>
+
+            <Typography variant="h7" sx={{ fontWeight: "bold", marginTop: 4 }}>
+                Private Account
+            </Typography>
 
             <Typography variant="h7" sx={{ fontWeight: "bold", marginTop: 4 }}>
                 Delete Account

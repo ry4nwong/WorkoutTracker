@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Box, Button, Container, Typography } from '@mui/material';
-import { validateCookies } from '../js/Cookies';
+import { validateCookies } from '../utils/Cookies';
 import HomeBar from '../components/home/HomeBar';
 import WorkoutFeed from '../components/home/WorkoutFeed';
 

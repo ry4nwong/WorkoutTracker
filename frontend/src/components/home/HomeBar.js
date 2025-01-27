@@ -2,7 +2,7 @@ import { AppBar, Box, Button, Container, IconButton, Menu, MenuItem, Toolbar, Ty
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import { deleteUserCookies } from "../../js/Cookies";
+import { deleteUserCookies } from "../../utils/Cookies";
 
 const HomeBar = ({ setDarkMode }) => {
     const [anchorEl, setAnchorEl] = useState(null);

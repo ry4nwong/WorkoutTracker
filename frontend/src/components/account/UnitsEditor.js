@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Alert, Box, Button, FormControl, InputLabel, MenuItem, Select, Snackbar } from "@mui/material";
-import { getCookie } from "../../js/Cookies";
+import { getCookie } from "../../utils/Cookies";
 
 const UnitsEditor = ({ units, setUnits }) => {
     const [weightUnit, setWeightUnit] = useState(units.isUsingPounds ? "lbs" : "kgs");

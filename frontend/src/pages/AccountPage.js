@@ -3,7 +3,7 @@ import { Box, Container, Typography, List, ListItem, ListItemButton, ListItemTex
 import HomeBar from "../components/home/HomeBar";
 import UnitsEditor from "../components/account/UnitsEditor";
 import AccountEditor from "../components/account/AccountEditor";
-import { getCookie } from "../js/Cookies";
+import { getCookie } from "../utils/Cookies";
 import ThemeEditor from "../components/account/ThemeEditor";
 
 const AccountPage = ({ darkMode, setDarkMode }) => {
@@ -131,7 +131,7 @@ const AccountPage = ({ darkMode, setDarkMode }) => {
                                 case "units":
                                     return <UnitsEditor units={units} setUnits={setUnits} />
                                 case "bodyData":
-                                    return "This is where body data content will be displayed.";
+                                    return "Body Data coming soon.";
                                 case "appearance":
                                     return <ThemeEditor darkMode={darkMode} setDarkMode={setDarkMode} />;
                                 default:

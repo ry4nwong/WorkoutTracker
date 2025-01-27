@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Box } from "@mui/material";
 import UsernameInput from "../registration/UsernameInput";
-import { getCookie } from "../../js/Cookies";
+import { getCookie } from "../../utils/Cookies";
 import { useNavigate } from "react-router-dom";
 
 const ProfileEditor = ({ oldUsername, oldFirstName, oldLastName, oldBiography, profileEditorOpen, setProfileEditorOpen }) => {

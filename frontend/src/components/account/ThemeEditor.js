@@ -1,6 +1,6 @@
 import { Box, Button } from '@mui/material';
 import React from 'react';
-import { getCookie } from '../../js/Cookies';
+import { getCookie } from '../../utils/Cookies';
 
 const ThemeEditor = ({ darkMode, setDarkMode }) => {
 

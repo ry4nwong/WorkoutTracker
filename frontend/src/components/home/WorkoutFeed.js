@@ -1,6 +1,6 @@
 import { Box, Button, TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { getCookie } from "../../js/Cookies";
+import { getCookie } from "../../utils/Cookies";
 import { DataGrid } from "@mui/x-data-grid";
 
 const WorkoutFeed = () => {
@@ -105,7 +105,7 @@ const WorkoutFeed = () => {
             const hours = Math.floor(diffInSeconds / 3600);
             return `${hours} ${hours === 1 ? 'hour' : 'hours'} ago`;
         } else if (diffInSeconds < 172800) {
-            return `yesterday`;
+            return `Yesterday`;
         } else {
             const days = Math.floor(diffInSeconds / 86400);
             return `${days} ${days === 1 ? 'day' : 'days'} ago`;
