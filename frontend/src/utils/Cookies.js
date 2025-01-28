@@ -1,17 +1,11 @@
 export const setUserCookies = (data) => {
     let now = new Date();
     now.setTime(now.getTime() + (60 * 60 * 1000));
-    document.cookie = `username=${data.username};expires=${now.toUTCString()};path=/;SameSite=Strict`;
     document.cookie = `id=${data.id};expires=${now.toUTCString()};path=/;SameSite=Strict`;
-    document.cookie = `email=${data.email};expires=${now.toUTCString()};path=/;SameSite=Strict`;
-    document.cookie = `name=${data.firstName} ${data.lastName};expires=${now.toUTCString()};path=/;SameSite=Strict`;
 };
 
 export const deleteUserCookies = () => {
-    document.cookie = 'username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
     document.cookie = 'id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-    document.cookie = 'email=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-    document.cookie = 'name=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
 };
 
 export const getCookie = (name) => {
@@ -30,6 +24,6 @@ export const validateCookies = () => {
         return acc;
     }, {});
 
-    const requiredCookies = ['username', 'id', 'email', 'name'];
+    const requiredCookies = ['id'];
     return requiredCookies.every(cookie => cookie in splitCookies);
 };

@@ -1,66 +1,173 @@
-import { Box, Button, Container, Grid, List, ListItem, ListItemText, Paper, Typography } from "@mui/material";
+import { Box, Button, TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { getCookie } from "../../js/Cookies";
+import { getCookie } from "../../utils/Cookies";
 import { DataGrid } from "@mui/x-data-grid";
 
 const WorkoutFeed = () => {
     const [feed, setFeed] = useState([]);
 
+
     useEffect(() => {
         const fetchFeed = async () => {
-            const response = await fetch(`http://localhost:8080/api/workouts/all/${getCookie('username')}`)
-                .then(response => response.json())
-                .then(data => setFeed(data.reverse()));
+            const response = await fetch('http://localhost:8080/graphql', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    query: `
+                        query GetAllWorkouts($userId: ID!) {
+                            getAllWorkouts(userId: $userId) {
+                                id
+                                username
+                                workoutName
+                                description
+                                duration
+                                date
+                                totalVolumePounds
+                                exercises {
+                                    ... on WeightExercise {
+                                        id
+                                        exerciseName
+                                        description
+                                        muscleTargeted
+                                        sets {
+                                            id
+                                            weight
+                                            reps
+                                        }
+                                    }
+                                    ... on CardioExercise {
+                                        id
+                                        exerciseName
+                                        description
+                                        sets {
+                                            id
+                                            duration
+                                            distance
+                                        }
+                                    }
+                                    ... on BodyweightExercise {
+                                        id
+                                        exerciseName
+                                        description
+                                        muscleTargeted
+                                        sets {
+                                            id
+                                            reps
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    `,
+                    variables: {
+                        userId: getCookie('id')
+                    },
+                }),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                const workouts = data?.data?.getAllWorkouts;
+
+                if (workouts) {
+                    setFeed(workouts.reverse());
+                } else {
+                    console.error("Error fetching workouts:", data?.errors);
+                }
+            } else {
+                console.error("Network error while fetching workouts");
+            }
         };
 
         fetchFeed();
     }, []);
 
-    return (
-        <Paper elevation={0} sx={{ width: '100%', bgcolor: 'background.default' }}>
-            <List sx={{ width: '100%', alignItems: 'center' }}>
-                {feed.map((workout, index) => (
-                    <ListItem key={workout.id} sx={{ width: '100%', display: 'flex', alignItems: 'center', mb: 4 }}>
-                        <Box width='50%' mx="auto">
-                            <Grid container>
-                                <Grid item xs={6}>
-                                    <ListItemText primaryTypographyProps={{ fontSize: '20px' }}>{workout.workoutName}</ListItemText>
-                                </Grid>
-                                <Grid item xs={5}>
-                                    <ListItemText primaryTypographyProps={{ fontSize: '16px' }}>Total Volume: {workout.totalVolumePounds} lbs</ListItemText>
-                                </Grid>
-                                <Grid item xs={1}>
-                                    <Button size="large">View</Button>
-                                </Grid>
-                            </Grid>
-                            <DataGrid
-                                rows={workout.exercises.slice(0, 4)}
-                                columns={[
-                                    { field: 'exerciseName', headerName: 'Exercise', sortable: false, filterable: false, width: 250, headerAlign: 'center', align: 'center' },
-                                    { field: 'muscleTargeted', headerName: 'Muscle Targeted', sortable: false, filterable: false, width: 150, headerAlign: 'center', align: 'center' },
-                                    {
-                                        field: 'sets',
-                                        headerName: 'Sets',
-                                        sortable: false,
-                                        filterable: false,
-                                        width: 150,
-                                        headerAlign: 'center',
-                                        align: 'center',
-                                        valueGetter: (value) => { return value.length; }
-                                    }
-                                ]}
-                                disableColumnMenu
-                                hideFooter
-                                disableColumnResize
-                                autoHeight
-                                sx={{ width: '100%' }}
+    const formatDuration = (seconds) => {
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
 
-                            />
-                        </Box>
-                    </ListItem>
-                ))}
-            </List>
+        return hours > 0 ? `${hours}h ${minutes}min` : `${minutes}min`;
+    };
+
+    const formatDate = (date) => {
+        const now = new Date();
+        const workoutDate = new Date(date);
+        const diffInSeconds = Math.floor((now - workoutDate) / 1000);
+
+        if (diffInSeconds < 60) {
+            return `${diffInSeconds} seconds ago`;
+        } else if (diffInSeconds < 3600) {
+            const minutes = Math.floor(diffInSeconds / 60);
+            return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'} ago`;
+        } else if (diffInSeconds < 86400) {
+            const hours = Math.floor(diffInSeconds / 3600);
+            return `${hours} ${hours === 1 ? 'hour' : 'hours'} ago`;
+        } else if (diffInSeconds < 172800) {
+            return `Yesterday`;
+        } else {
+            const days = Math.floor(diffInSeconds / 86400);
+            return `${days} ${days === 1 ? 'day' : 'days'} ago`;
+        }
+    };
+
+    return (
+        <Paper elevation={0} sx={{ width: '70%', margin: '0 auto', bgcolor: 'background.default', padding: 2 }}>
+            {feed.map((workout) => (
+                <Box
+                    key={workout.id}
+                    sx={{
+                        mb: 4,
+                        cursor: 'pointer',
+                        padding: 2,
+                        border: '1px solid #ddd',
+                        borderRadius: '8px',
+                        boxShadow: 1
+                    }}
+                >
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <Typography variant="caption">{workout.username}</Typography>
+                        <Typography variant="caption">{formatDate(workout.date)}</Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                        <Typography variant="h6" sx={{ fontWeight: 'bold' }}>{workout.workoutName}</Typography>
+                        <Typography variant="caption">Total Volume: {workout.totalVolumePounds} lbs</Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <Typography variant="body1">{workout.description}</Typography>
+                    </Box>
+                    <TableContainer>
+                        <Table sx={{ minWidth: 650, border: 'hidden' }}>
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell sx={{ fontWeight: 'bold', fontSize: '12px' }}>Exercise Name</TableCell>
+                                    <TableCell
+                                        sx={{
+                                            fontWeight: 'bold',
+                                            fontSize: '12px',
+                                            textAlign: 'center',
+                                            width: '200px',
+                                        }}
+                                    >
+                                        Sets Completed
+                                    </TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {workout.exercises.map((exercise) => (
+                                    <TableRow key={exercise.id}>
+                                        <TableCell sx={{ fontSize: '14px' }}>{exercise.exerciseName}</TableCell>
+                                        <TableCell sx={{ fontSize: '14px', textAlign: 'center', width: '200px' }}>{exercise.sets.length}</TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </Box>
+            ))}
         </Paper>
+
     );
 };
 

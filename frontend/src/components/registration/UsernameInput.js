@@ -14,7 +14,7 @@ const UsernameInput = ({ sendUsername, setValidUsername, usernameField }) => {
         setColor('');
         setUsernameErrorMessage('');
 
-        if(newUsername === '') {
+        if (newUsername === '') {
             setColor('error');
             setUsernameErrorMessage('Username required!');
         } else if (/^[a-zA-Z0-9]+$/.test(e.target.value) == false) {
@@ -30,19 +30,43 @@ const UsernameInput = ({ sendUsername, setValidUsername, usernameField }) => {
                     checkUsername(newUsername);
                 }
             }, 1000);
-        }  
+        }
     };
 
     const checkUsername = async (username) => {
-        const response = await fetch(`http://localhost:8080/api/auth/username/${username}`);
-        if(response.ok) {
-            setValidUsername(true);
-            setColor('success');
+        const response = await fetch('http://localhost:8080/graphql', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                query: `
+                    query UsernameExists($username: String!) {
+                        usernameExists(username: $username)
+                    }
+                `,
+                variables: {
+                    username: username,
+                },
+            }),
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            const usernameInUse = data?.data?.usernameExists;
+
+            if (!usernameInUse) {
+                setValidUsername(true);
+                setColor('success');
+            } else {
+                setColor('error');
+                setUsernameErrorMessage('Username already in use!');
+            }
         } else {
-            setColor('error');
-            setUsernameErrorMessage('Username already in use!');
+            console.error('Error checking username availability');
         }
     };
+
 
     return (
         <TextField
@@ -55,6 +79,11 @@ const UsernameInput = ({ sendUsername, setValidUsername, usernameField }) => {
             color={color}
             helperText={usernameErrorMessage}
             required
+            sx={{
+                '& .MuiOutlinedInput-root': {
+                    borderRadius: 2
+                }
+            }}
         />
     );
 };

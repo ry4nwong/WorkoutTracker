@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import ExerciseList from "../components/workout/ExerciseList";
 import CurrentExerciseList from "../components/workout/CurrentExerciseList";
 import WorkoutBar from "../components/workout/WorkoutBar";
-import { getCookie, validateCookies } from "../js/Cookies";
+import { getCookie, validateCookies } from "../utils/Cookies";
 import { useNavigate } from "react-router-dom";
 import FinishWorkoutPopup from "../components/workout/FinishWorkoutPopup";
 
@@ -18,6 +18,7 @@ const WorkoutPage = () => {
     const [workoutDescription, setWorkoutDescription] = useState('');
     const [alertOpen, setAlertOpen] = useState(false);
     const navigate = useNavigate();
+    const startTime = new Date();
 
     useEffect(() => {
         if (validateCookies() === false) {
@@ -26,9 +27,62 @@ const WorkoutPage = () => {
         }
 
         const fetchExercises = async () => {
-            const response = await fetch('http://localhost:8080/api/exercises/all')
-                .then(response => response.json())
-                .then(data => setExercises(data));
+            const response = await fetch('http://localhost:8080/graphql', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    query: `
+                        query GetAllExercises {
+                            allExercises {
+                                ... on WeightExercise {
+                                    id
+                                    exerciseType
+                                    exerciseName
+                                    description
+                                    muscleTargeted
+                                    sets {
+                                        id
+                                        weight
+                                        reps
+                                    }
+                                }
+                                ... on CardioExercise {
+                                    id
+                                    exerciseType
+                                    exerciseName
+                                    description
+                                    sets {
+                                        id
+                                        duration
+                                        distance
+                                    }
+                                }
+                                ... on BodyweightExercise {
+                                    id
+                                    exerciseType
+                                    exerciseName
+                                    description
+                                    muscleTargeted
+                                    sets {
+                                        id
+                                        reps
+                                    }
+                                }
+                            }
+                        }
+                    `
+                }),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log(data?.data?.allExercises);
+                setExercises(data?.data?.allExercises);
+            } else {
+                console.error("Error fetching exercises");
+            }
         };
 
         fetchExercises();
@@ -52,37 +106,103 @@ const WorkoutPage = () => {
 
     const addChosenExercise = (exercise) => {
         let newExercise = structuredClone(exercise);
-        newExercise.exerciseType = 'muscleTargeted' in exercise ? "weight" : "cardio";
         currentExercises.push(newExercise);
         setExerciseListVisibility(false);
     };
 
     const updateTotalVolume = (newVolume) => {
-        setTotalVolume(totalVolume + parseInt(newVolume));
+        setTotalVolume(totalVolume + parseFloat(newVolume));
     };
 
     const finishWorkout = async () => {
-        const response = await fetch(`http://localhost:8080/api/workouts/create/${getCookie('username')}`, {
+        const formattedExercises = currentExercises.map(exercise => {
+            const { exerciseType, ...rest } = exercise;
+
+            if (exerciseType === 'WEIGHT') {
+                return {
+                    exerciseType: 'WEIGHT',
+                    weightExercise: {
+                        ...rest,
+                        sets: rest.sets.map(set => ({
+                            ...set,
+                            reps: parseInt(set.reps, 10),
+                            weight: parseFloat(set.weight),
+                        })),
+                    },
+                };
+            } else if (exerciseType === 'CARDIO') {
+                return {
+                    exerciseType: 'CARDIO',
+                    cardioExercise: {
+                        ...rest,
+                        sets: rest.sets.map(set => ({
+                            ...set,
+                            duration: set.duration,
+                            distance: parseFloat(set.distance),
+                        })),
+                    },
+                };
+            } else if (exerciseType === 'BODYWEIGHT') {
+                return {
+                    exerciseType: 'BODYWEIGHT',
+                    bodyweightExercise: {
+                        ...rest,
+                        sets: rest.sets.map(set => ({
+                            ...set,
+                            reps: parseInt(set.reps, 10),
+                        })),
+                    },
+                };
+            } else {
+                throw new Error(`Unknown exercise type: ${exerciseType}`);
+            }
+        });
+
+        const response = await fetch('http://localhost:8080/graphql', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                workoutName: workoutName,
-                description: workoutDescription,
-                duration: timer,
-                totalVolumePounds: totalVolume,
-                exercises: currentExercises
-            })
+                query: `
+                    mutation CreateWorkout($userId: ID!, $workoutInput: WorkoutInput!) {
+                        createWorkout(userId: $userId, workoutInput: $workoutInput) {
+                            id
+                            workoutName
+                            description
+                            duration
+                            totalVolumePounds
+                        }
+                    }
+                `,
+                variables: {
+                    userId: getCookie('id'),
+                    workoutInput: {
+                        workoutName: workoutName,
+                        description: workoutDescription,
+                        date: startTime.toISOString(),
+                        duration: parseInt(timer),
+                        totalVolumePounds: parseFloat(totalVolume),
+                        exercises: formattedExercises,
+                    },
+                },
+            }),
         });
 
         if (response.ok) {
-            setTimeout(() => {
-                navigate('/home');
-            }, 2000);
-            setAlertOpen(true);
+            const data = await response.json();
+            const createdWorkout = data?.data?.createWorkout;
+
+            if (createdWorkout) {
+                setTimeout(() => {
+                    navigate('/home');
+                }, 2000);
+                setAlertOpen(true);
+            } else {
+                console.error("Workout creation failed:", data?.errors);
+            }
         } else {
-            console.log("workout creation failed");
+            console.log("Network error while creating workout");
         }
     };
 
@@ -91,27 +211,54 @@ const WorkoutPage = () => {
     }
 
     return (
-        <Container sx={{m: 10}}>
-            <WorkoutBar timer={timer} setTimer={setTimer} totalVolume={totalVolume} finishWorkout={openWorkoutFinished} />
+        <Container
+            sx={{
+                display: 'flex', // Makes the container a flexbox
+                flexDirection: 'column', // Stacks children vertically
+                justifyContent: 'flex-start', // Centers content vertically
+                alignItems: 'center', // Centers content horizontally
+                minHeight: '100vh', // Ensures the container takes up the full viewport height
+                marginY: 10, // Margin for spacing
+                maxWidth: '100%'
+            }}
+        >
+            <WorkoutBar
+                timer={timer}
+                setTimer={setTimer}
+                totalVolume={totalVolume}
+                finishWorkout={openWorkoutFinished}
+            />
             <Box
                 sx={{
                     display: 'flex',
                     flexDirection: 'column',
                     textAlign: 'center',
                     alignItems: 'center',
-                    gap: 2
+                    gap: 2,
+                    width: '80%', // Ensures it doesn't limit child centering
                 }}
             >
-                {currentExercises.length !== 0
-                    ? <CurrentExerciseList currentExercises={currentExercises} setCurrentExercises={setCurrentExercises} updateTotalVolume={(newVolume) => updateTotalVolume(newVolume)} />
-                    : <Typography sx={{ height: '30px', marginTop: 4 }}>No exercises logged yet! Add an exercise.</Typography>
-                }
-                <Button variant="contained" onClick={() => setExerciseListVisibility(true)} sx={{ width: '57%' }}>
+                {currentExercises.length !== 0 ? (
+                    <CurrentExerciseList
+                        currentExercises={currentExercises}
+                        setCurrentExercises={setCurrentExercises}
+                        updateTotalVolume={(newVolume) => updateTotalVolume(newVolume)}
+                    />
+                ) : (
+                    <Typography sx={{ height: '30px', marginTop: 4 }}>
+                        No exercises logged yet! Add an exercise.
+                    </Typography>
+                )}
+                <Button
+                    variant="contained"
+                    onClick={() => setExerciseListVisibility(true)}
+                    sx={{ width: '57%' }}
+                >
                     Add Exercise
                 </Button>
             </Box>
 
-            <FinishWorkoutPopup 
+            <FinishWorkoutPopup
                 workoutFinished={workoutFinished}
                 setWorkoutName={(e) => setWorkoutName(e)}
                 setWorkoutDescription={(e) => setWorkoutDescription(e)}

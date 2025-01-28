@@ -1,33 +1,21 @@
 package com.example.workout_api.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.graphql.data.method.annotation.QueryMapping;
+import org.springframework.stereotype.Controller;
 
 import com.example.workout_api.model.exercise.Exercise;
 import com.example.workout_api.service.ExerciseService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
-
-@CrossOrigin(origins = "http://localhost:3000")
-@RestController
-@RequestMapping("/api/exercises")
+@Controller
 public class ExerciseController {
     @Autowired
     private ExerciseService exerciseService;
 
-    @GetMapping("/all")
-    public ResponseEntity<?> getExercises() {
-        return ResponseEntity.ok(exerciseService.getAll());
+    @QueryMapping
+    public List<Exercise> allExercises() {
+        return exerciseService.getAll();
     }
-
-    @PostMapping("/create")
-    public ResponseEntity<?> createExercise(@RequestBody Exercise newExercise) {
-        return ResponseEntity.ok(exerciseService.addExercise(newExercise));
-    }
-    
 }

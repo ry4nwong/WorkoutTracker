@@ -8,19 +8,22 @@ const WorkoutBar = ({ timer, setTimer, totalVolume, finishWorkout }) => {
 
     return (
         <AppBar position="fixed">
-            <Toolbar sx={{backgroundColor: '#333333'}}>
-                <Typography variant="h6">Total Volume: {totalVolume} lbs</Typography>
-                <Box sx={{ flexGrow: 2 }} />
+            <Toolbar sx={{ backgroundColor: '#333333', justifyContent: 'space-between' }}>
+                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 0.5 }}>
+                    <Typography variant="body2" sx={{ fontWeight: 'bold', color: '#FFFFFF' }}>
+                        Total Volume: {totalVolume} lbs
+                    </Typography>
+                    <WorkoutTimer timer={timer} setTimer={setTimer} />
+                </Box>
 
-                <WorkoutTimer timer={timer} setTimer={setTimer} />
-                <Box sx={{ flexGrow: 1 }} />
-
-                <Button variant="contained" color="error" onClick={() => navigate('/home')}>
-                    Discard Workout
-                </Button>
-                <Button variant="contained" onClick={finishWorkout}>
-                    Finish Workout
-                </Button>
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                    <Button variant="outlined" color="error" onClick={() => navigate('/home')} sx={{ fontWeight: "bold" }}>
+                        Discard Workout
+                    </Button>
+                    <Button variant="contained" onClick={finishWorkout} sx={{ fontWeight: "bold" }}>
+                        Finish Workout
+                    </Button>
+                </Box>
             </Toolbar>
         </AppBar>
     )

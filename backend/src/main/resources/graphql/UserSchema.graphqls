@@ -1,0 +1,79 @@
+type User {
+  id: ID!
+  username: String
+  email: String
+  password: String
+  firstName: String
+  lastName: String
+  workouts: [Workout]
+  units: Units
+  bodyData: BodyData
+  biography: String
+  isPrivateAccount: Boolean
+  darkMode: Boolean
+}
+
+type Units {
+  isUsingMiles: Boolean
+  isUsingPounds: Boolean
+  isUsingInches: Boolean
+}
+
+type BodyData {
+  weight: Float
+  height: Float
+}
+
+extend type Query {
+  allUsers: [User]
+  user(id: ID!): User
+  userByUsername(username: String!): User
+  usernameExists(username: String!): Boolean
+  emailExists(email: String!): Boolean
+}
+
+type Mutation {
+  register(userInput: UserInput!): User
+  login(loginInput: LoginInput!): User
+  updateProfileInfo(id: ID!, profileInput: ProfileInput!): User
+  updateUnits(id: ID!, unitsInput: UnitsInput!): User
+  updateBodyData(id: ID!, bodyDataInput: BodyDataInput!): User
+  updateEmail(id: ID!, email: String!): User
+  updatePassword(id: ID!, password: String!): User
+  delete(id: ID!): Boolean
+  updateDarkMode(id: ID!, darkMode: Boolean!): User
+  updatePrivateAccount(id: ID!, privateAccount: Boolean!): User
+}
+
+input UserInput {
+  firstName: String
+  lastName: String
+  username: String!
+  email: String!
+  password: String!
+}
+
+input LoginInput {
+  username: String!
+  password: String!
+}
+
+input ProfileInput {
+  firstName: String!
+  lastName: String!
+  username: String!
+  biography: String!
+}
+
+input UnitsInput {
+  isUsingMiles: Boolean!
+  isUsingPounds: Boolean!
+  isUsingInches: Boolean!
+}
+
+input BodyDataInput {
+  weight: Float!
+  height: Float!
+}
+
+

@@ -1,0 +1,51 @@
+enum SetType {
+  WEIGHT
+  CARDIO
+  BODYWEIGHT
+}
+
+interface Set {
+    id: ID!
+}
+
+type CardioSet implements Set {
+    id: ID!
+    duration: String
+    distance: Float
+}
+
+type WeightSet implements Set {
+    id: ID!
+    weight: Float
+    reps: Int
+}
+
+type BodyweightSet implements Set {
+    id: ID!
+    reps: Int
+}
+
+input SetInput {
+    setType: SetType!
+    weightSet: WeightSetInput
+    cardioSet: CardioSetInput
+    BodyweightSet: BodyweightSetInput
+}
+
+input WeightSetInput {
+    id: ID!
+    weight: Float!
+    reps: Int!
+}
+
+input CardioSetInput {
+    id: ID!
+    duration: String!
+    distance: Float!
+}
+
+input BodyweightSetInput {
+    id: ID!
+    reps: Int
+}
+

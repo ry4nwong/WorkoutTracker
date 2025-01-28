@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Container, TextField, Button, Typography, Box, Paper, Alert } from '@mui/material';
-import { setUserCookies, validateCookies } from '../js/Cookies';
+import { setUserCookies, validateCookies } from '../utils/Cookies';
 
-const LoginPage = () => {
+const LoginPage = ({ setDarkMode }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showAlert, setShowAlert] = useState(false);
@@ -20,20 +20,46 @@ const LoginPage = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    const response = await fetch('http://localhost:8080/api/auth/login', {
+    const response = await fetch('http://localhost:8080/graphql', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: username, password: password })
+      body: JSON.stringify({
+        query: `
+          mutation Login($loginInput: LoginInput!) {
+            login(loginInput: $loginInput) {
+              id
+              darkMode
+            }
+          }
+        `,
+        variables: {
+          loginInput: {
+            username: username,
+            password: password,
+          },
+        },
+      }),
     });
 
     if (response.ok) {
-      const data = await response.json()
-        .then(data => setUserCookies(data));
-      setAlertType('success');
-      setAlertMessage('Success! Logging in...');
-      setShowAlert(true);
-      setTimeout(() => navigate('/home'), 2000);
+      const data = await response.json();
+      const userData = data?.data?.login;
+
+      if (userData) {
+        setUserCookies(userData);
+        setAlertType('success');
+        setAlertMessage('Success! Logging in...');
+        setShowAlert(true);
+        setTimeout(() => {
+          navigate('/home');
+          setDarkMode(userData.darkMode);
+        }, 2000);
+      } else {
+        setShowAlert(true);
+      }
     } else {
+      setAlertType('error');
+      setAlertMessage('An error occurred. Please try again.');
       setShowAlert(true);
     }
   };

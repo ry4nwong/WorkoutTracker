@@ -7,7 +7,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.example.workout_api.model.workout.Workout;
-import com.example.workout_api.payload.request.RegistrationRequest;
+import com.example.workout_api.payload.user.UserInput;
 
 import lombok.Data;
 
@@ -23,18 +23,24 @@ public class User {
     private String firstName;
     private String lastName;
     private List<Workout> workouts;
-    private UserPreferences userPreferences;
+    private Units units;
     private BodyData bodyData;
+    private String biography;
+    private Boolean isPrivateAccount;
+    private Boolean darkMode;
 
-    public User(RegistrationRequest newUser) {
+    public User(UserInput newUser) {
         this.username = newUser.getUsername();
         this.email = newUser.getEmail();
         this.password = newUser.getPassword();
         this.firstName = newUser.getFirstName();
         this.lastName = newUser.getLastName();
         this.workouts = new LinkedList<>();
-        this.userPreferences = newUser.getUserPreferences();
-        this.bodyData = newUser.getBodyData();
+        this.units = new Units();
+        this.bodyData = new BodyData();
+        this.biography = "";
+        this.isPrivateAccount = false;
+        this.darkMode = true;
     }
 
     public User() {
@@ -44,6 +50,9 @@ public class User {
         this.firstName = null;
         this.lastName = null;
         this.workouts = null;
-        this.userPreferences = null;
+        this.units = null;
+        this.biography = null;
+        this.isPrivateAccount = false;
+        this.darkMode = true;
     }
 }

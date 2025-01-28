@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Box, Button, Container, Typography } from '@mui/material';
-import { validateCookies } from '../js/Cookies';
+import { validateCookies } from '../utils/Cookies';
 import HomeBar from '../components/home/HomeBar';
 import WorkoutFeed from '../components/home/WorkoutFeed';
 
-const HomePage = () => {
+const HomePage = ({ setDarkMode }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -15,8 +15,8 @@ const HomePage = () => {
   }, []);
 
   return (
-    <Container sx={{alignItems: 'center'}}>
-      <HomeBar />
+    <Container sx={{ alignItems: 'center' }}>
+      <HomeBar setDarkMode={setDarkMode} />
 
       <Box
         sx={{
@@ -29,9 +29,9 @@ const HomePage = () => {
           // m: 5
         }}
       >
-        <Typography textAlign="center" variant='h5' sx={{m: 5}}>My Feed</Typography>
+        <Typography textAlign="center" variant='h5' sx={{ m: 3, fontWeight: "bold" }}>My Feed</Typography>
         <WorkoutFeed />
-        <Typography textAlign="center" sx={{m: 10}}>No more feed to show!</Typography>
+        <Typography textAlign="center" sx={{ m: 10 }}>No more feed to show!</Typography>
       </Box>
 
     </Container>

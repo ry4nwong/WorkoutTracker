@@ -1,172 +1,153 @@
 package com.example.workout_api;
 
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.example.workout_api.controller.WorkoutController;
-import com.example.workout_api.exception.UserNotFoundException;
-import com.example.workout_api.exception.WorkoutNotFoundException;
-import com.example.workout_api.model.exercise.Exercise;
-import com.example.workout_api.model.user.User;
 import com.example.workout_api.model.workout.Workout;
+import com.example.workout_api.payload.workout.WorkoutInput;
 import com.example.workout_api.service.WorkoutService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
-@WebMvcTest(WorkoutController.class)
-public class WorkoutControllerTest {
-    private MockMvc mockMvc;
+@ExtendWith(MockitoExtension.class)
+class WorkoutControllerTest {
+
+    @Mock
+    private WorkoutService workoutService;
 
     @InjectMocks
     private WorkoutController workoutController;
 
-    @MockBean
-    private WorkoutService workoutService;
-
-    private User user;
-    private Workout workout;
-    private Workout updatedWorkout;
-    private ObjectMapper objectMapper;
+    private Workout mockWorkout;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
-        user = new User();
-        user.setId("12345678");
-        user.setUsername("testuser");
-        user.setFirstName("Test");
-        user.setLastName("User");
-        user.setWorkouts(new ArrayList<>());
+        mockWorkout = new Workout();
+        mockWorkout.setId("workout123");
+        mockWorkout.setWorkoutName("Mock Workout");
+    }
 
-        workout = new Workout("Test Workout", "", 130, 15000, new ArrayList<Exercise>());
-        workout.setId("1");
+    // Get workout
+    @Test
+    void testGetWorkout_Success() throws Exception {
+        when(workoutService.findWorkout("workout123")).thenReturn(mockWorkout);
 
-        updatedWorkout = new Workout("Updated Workout", "", 145, 19000, new ArrayList<Exercise>());
-        updatedWorkout.setId("1");
+        Workout result = workoutController.getWorkout("workout123");
 
-        mockMvc = MockMvcBuilders.standaloneSetup(workoutController).build();
-        objectMapper = new ObjectMapper();
+        assertNotNull(result);
+        assertEquals("Mock Workout", result.getWorkoutName());
+        verify(workoutService).findWorkout("workout123");
     }
 
     @Test
-    void testCreateWorkout() throws Exception {
-        when(workoutService.createWorkout("testuser", workout)).thenReturn(workout);
-        mockMvc.perform(post("/api/workouts/create/testuser")
-        .contentType(MediaType.APPLICATION_JSON)
-        .content(objectMapper.writeValueAsString(workout)))
-        .andExpect(status().isOk())
-        .andExpect(content().json(objectMapper.writeValueAsString(workout)));
+    void testGetWorkout_ThrowsException() throws Exception {
+        when(workoutService.findWorkout("invalidId")).thenThrow(new Exception("Not Found"));
+
+        assertThrows(Exception.class, () -> workoutController.getWorkout("invalidId"));
+        verify(workoutService).findWorkout("invalidId");
+    }
+
+    // Get all workouts
+    @Test
+    void testGetAllWorkouts_Success() throws Exception {
+        List<Workout> mockList = new ArrayList<>();
+        mockList.add(mockWorkout);
+        when(workoutService.findAllWorkouts("user123")).thenReturn(mockList);
+
+        List<Workout> result = workoutController.getAllWorkouts("user123");
+
+        assertEquals(1, result.size());
+        assertEquals("Mock Workout", result.get(0).getWorkoutName());
+        verify(workoutService).findAllWorkouts("user123");
     }
 
     @Test
-    void testCreateWorkoutNotFound() throws Exception {
-        when(workoutService.createWorkout("testuser", workout)).thenThrow(UserNotFoundException.class);
-        mockMvc.perform(post("/api/workouts/create/testuser")
-        .contentType(MediaType.APPLICATION_JSON)
-        .content(objectMapper.writeValueAsString(workout)))
-        .andExpect(status().isBadRequest());
+    void testGetAllWorkouts_ThrowsException() throws Exception {
+        when(workoutService.findAllWorkouts("badUserId")).thenThrow(new Exception("User not found"));
+
+        assertThrows(Exception.class, () -> workoutController.getAllWorkouts("badUserId"));
+        verify(workoutService).findAllWorkouts("badUserId");
+    }
+
+    // Create Workout
+    @Test
+    void testCreateWorkout_Success() throws Exception {
+        WorkoutInput workoutInput = new WorkoutInput();
+        workoutInput.setWorkoutName("New Workout");
+
+        when(workoutService.createWorkout("user123", workoutInput)).thenReturn(mockWorkout);
+
+        Workout result = workoutController.createWorkout("user123", workoutInput);
+
+        assertNotNull(result);
+        assertEquals("Mock Workout", result.getWorkoutName());
+        verify(workoutService).createWorkout("user123", workoutInput);
     }
 
     @Test
-    void testModifyWorkout() throws Exception {
-        when(workoutService.modifyWorkout("1", updatedWorkout)).thenReturn(updatedWorkout);
-        mockMvc.perform(patch("/api/workouts/update/1")
-        .contentType(MediaType.APPLICATION_JSON)
-        .content(objectMapper.writeValueAsString(updatedWorkout)))
-        .andExpect(status().isOk())
-        .andExpect(content().json(objectMapper.writeValueAsString(updatedWorkout)));
+    void testCreateWorkout_ThrowsException() throws Exception {
+        WorkoutInput workoutInput = new WorkoutInput();
+        workoutInput.setWorkoutName("Fail Workout");
+
+        when(workoutService.createWorkout("user123", workoutInput))
+            .thenThrow(new Exception("Create failed"));
+
+        assertThrows(Exception.class, () -> workoutController.createWorkout("user123", workoutInput));
+        verify(workoutService).createWorkout("user123", workoutInput);
+    }
+
+    // Modify workout
+    @Test
+    void testModifyWorkout_Success() throws Exception {
+        WorkoutInput workoutInput = new WorkoutInput();
+        workoutInput.setWorkoutName("Modified Title");
+
+        when(workoutService.modifyWorkout("workout123", workoutInput)).thenReturn(mockWorkout);
+
+        Workout result = workoutController.modifyWorkout("workout123", workoutInput);
+
+        assertNotNull(result);
+        assertEquals("Mock Workout", result.getWorkoutName());
+        verify(workoutService).modifyWorkout("workout123", workoutInput);
     }
 
     @Test
-    void testModifyWorkoutInvalidUsername() throws Exception {
-        when(workoutService.modifyWorkout("1", updatedWorkout)).thenThrow(UserNotFoundException.class);
-        mockMvc.perform(patch("/api/workouts/update/1")
-        .contentType(MediaType.APPLICATION_JSON)
-        .content(objectMapper.writeValueAsString(updatedWorkout)))
-        .andExpect(status().isBadRequest());
+    void testModifyWorkout_ThrowsException() throws Exception {
+        WorkoutInput workoutInput = new WorkoutInput();
+        workoutInput.setWorkoutName("Does not matter");
+
+        when(workoutService.modifyWorkout("invalidWorkoutId", workoutInput))
+            .thenThrow(new Exception("Modify failed"));
+
+        assertThrows(Exception.class, () -> workoutController.modifyWorkout("invalidWorkoutId", workoutInput));
+        verify(workoutService).modifyWorkout("invalidWorkoutId", workoutInput);
+    }
+
+    // Delete workout
+    @Test
+    void testDeleteWorkout_Success() throws Exception {
+        when(workoutService.deleteWorkout("workout123")).thenReturn(true);
+
+        boolean result = workoutController.deleteWorkout("workout123");
+
+        assertTrue(result);
+        verify(workoutService).deleteWorkout("workout123");
     }
 
     @Test
-    void testModifyWorkoutInvalidWorkoutId() throws Exception {
-        when(workoutService.modifyWorkout("1", updatedWorkout)).thenThrow(WorkoutNotFoundException.class);
-        mockMvc.perform(patch("/api/workouts/update/1")
-        .contentType(MediaType.APPLICATION_JSON)
-        .content(objectMapper.writeValueAsString(updatedWorkout)))
-        .andExpect(status().isBadRequest());
-    }
+    void testDeleteWorkout_ThrowsException() throws Exception {
+        when(workoutService.deleteWorkout("invalidWorkoutId")).thenReturn(false);
 
-    @Test
-    void testDeleteWorkout() throws Exception {
-        when(workoutService.deleteWorkout("1")).thenReturn(true);
-        mockMvc.perform(delete("/api/workouts/delete/1")
-        .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk());
-    }
-
-    @Test
-    void testDeleteWorkoutFailed() throws Exception {
-        when(workoutService.deleteWorkout("1")).thenReturn(false);
-        mockMvc.perform(delete("/api/workouts/delete/1")
-        .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void testGetWorkout() throws Exception {
-        when(workoutService.findWorkout("1")).thenReturn(workout);
-        mockMvc.perform(get("/api/workouts/get/1")
-        .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().json(objectMapper.writeValueAsString(workout)));
-    }
-
-    @Test
-    void testGetWorkoutInvalidUsername() throws Exception {
-        when(workoutService.findWorkout("1")).thenThrow(UserNotFoundException.class);
-        mockMvc.perform(get("/api/workouts/get/1")
-        .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void testGetWorkoutInvalidWorkoutId() throws Exception {
-        when(workoutService.findWorkout("1")).thenThrow(WorkoutNotFoundException.class);
-        mockMvc.perform(get("/api/workouts/get/1")
-        .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void testGetAllWorkouts() throws Exception {
-        when(workoutService.findAllWorkouts("testuser")).thenReturn(user.getWorkouts());
-        mockMvc.perform(get("/api/workouts/all/testuser")
-        .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().json(objectMapper.writeValueAsString(user.getWorkouts())));
-    }
-
-    @Test
-    void testGetAllWorkoutsInvalidUsername() throws Exception {
-        when(workoutService.findAllWorkouts("testuser")).thenThrow(UserNotFoundException.class);
-        mockMvc.perform(get("/api/workouts/all/testuser")
-        .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isBadRequest());
+        assertFalse(workoutController.deleteWorkout("invalidWorkoutId"));
+        verify(workoutService).deleteWorkout("invalidWorkoutId");
     }
 }

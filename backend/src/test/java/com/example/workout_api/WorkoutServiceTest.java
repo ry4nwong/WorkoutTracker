@@ -1,165 +1,207 @@
 package com.example.workout_api;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.atMostOnce;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
 import com.example.workout_api.exception.UserNotFoundException;
 import com.example.workout_api.exception.WorkoutNotFoundException;
-import com.example.workout_api.model.exercise.CardioExercise;
-import com.example.workout_api.model.exercise.Exercise;
-import com.example.workout_api.model.exercise.WeightExercise;
 import com.example.workout_api.model.user.User;
 import com.example.workout_api.model.workout.Workout;
+import com.example.workout_api.payload.workout.WorkoutInput;
 import com.example.workout_api.repository.UserRepository;
 import com.example.workout_api.service.WorkoutService;
 
-public class WorkoutServiceTest {
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+@ExtendWith(MockitoExtension.class)
+class WorkoutServiceTest {
+
     @Mock
     private UserRepository userRepository;
 
     @InjectMocks
     private WorkoutService workoutService;
 
-    private User user;
-    private Workout workout;
-    private Workout updatedWorkout;
+    private User mockUser;
+    private Workout mockWorkout;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
-        user = new User();
-        user.setId("12345678");
-        user.setUsername("testuser");
-        user.setFirstName("Test");
-        user.setLastName("User");
-        user.setWorkouts(new ArrayList<>());
+        mockUser = new User();
+        mockUser.setId("user123");
+        mockUser.setUsername("testUser");
+        mockUser.setWorkouts(new ArrayList<>());
 
-        workout = new Workout("Test Workout", "", 130, 15000, new ArrayList<Exercise>());
-        workout.setId("1");
+        mockWorkout = new Workout();
+        mockWorkout.setId("workout123");
+        mockWorkout.setWorkoutName("Sample Workout Title");
 
-        updatedWorkout = new Workout("Updated Workout", "", 145, 19000, new ArrayList<Exercise>());
-        updatedWorkout.setId("1");
+        mockUser.getWorkouts().add(mockWorkout);
+    }
+
+    // Create workout
+    @Test
+    void testCreateWorkout_Success() throws Exception {
+        WorkoutInput input = new WorkoutInput();
+        input.setWorkoutName("New Workout");
+        input.setDuration(0);
+        input.setTotalVolumePounds(0.0);
+        input.setExercises(new ArrayList<>());
+
+        when(userRepository.findById("user123")).thenReturn(Optional.of(mockUser));
+        when(userRepository.save(any(User.class))).thenReturn(mockUser);
+
+        Workout created = workoutService.createWorkout("user123", input);
+        assertNotNull(created);
+        assertEquals("New Workout", created.getWorkoutName());
+
+        verify(userRepository).findById("user123");
+        verify(userRepository).save(mockUser);
     }
 
     @Test
-    void testCreateWorkout() throws Exception {
-        when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(user));
-        when(userRepository.save(user)).thenReturn(user);
-        Workout newWorkout = workoutService.createWorkout("testuser", workout);
-        
-        assertEquals("Test Workout", newWorkout.getWorkoutName());
-        verify(userRepository, atMostOnce()).save(any(User.class));
-        assertEquals(1, user.getWorkouts().size());
-    }
+    void testCreateWorkout_UserNotFound() {
+        WorkoutInput input = new WorkoutInput();
+        when(userRepository.findById("noUser")).thenReturn(Optional.empty());
 
-    @Test
-    void testCreateWorkoutInvalidUsername() throws Exception {
-        when(userRepository.findByUsername("testuser")).thenReturn(Optional.empty());
-        
-        assertThrows(UserNotFoundException.class, () -> workoutService.createWorkout("testuser", workout));
-    }
-
-    @Test
-    void testModifyWorkout() throws Exception {
-        user.getWorkouts().add(workout);
-        when(userRepository.findByWorkoutId("1")).thenReturn(Optional.of(user));
-        Workout modifiedWorkout = workoutService.modifyWorkout("1", updatedWorkout);
-        
-        assertEquals("Updated Workout", modifiedWorkout.getWorkoutName());
-        assertEquals(145, modifiedWorkout.getDuration());
-        verify(userRepository, atMostOnce()).save(any(User.class));
-        assertEquals(1, user.getWorkouts().size());
-    }
-
-    @Test
-    void testModifyWorkoutInvalidWorkoutId() throws Exception {
-        when(userRepository.findByWorkoutId("1")).thenReturn(Optional.of(user));
-        
-        assertThrows(WorkoutNotFoundException.class, () -> workoutService.modifyWorkout("1", updatedWorkout));
+        assertThrows(UserNotFoundException.class, () -> workoutService.createWorkout("noUser", input));
+        verify(userRepository).findById("noUser");
         verify(userRepository, never()).save(any(User.class));
-        assertEquals(0, user.getWorkouts().size());
+    }
+
+    // Modify workout
+    @Test
+    void testModifyWorkout_Success() throws Exception {
+        WorkoutInput input = new WorkoutInput();
+        input.setWorkoutName("Modified Title");
+        input.setDuration(0);
+        input.setTotalVolumePounds(0.0);
+        input.setExercises(new ArrayList<>());
+
+        when(userRepository.findByWorkoutId("workout123")).thenReturn(Optional.of(mockUser));
+        when(userRepository.save(any(User.class))).thenReturn(mockUser);
+
+        Workout result = workoutService.modifyWorkout("workout123", input);
+        assertNotNull(result);
+        assertEquals("Modified Title", result.getWorkoutName());
+
+        verify(userRepository).findByWorkoutId("workout123");
+        verify(userRepository).save(mockUser);
     }
 
     @Test
-    void testModifyWorkoutInvalidUsername() throws Exception {
-        when(userRepository.findByWorkoutId("1")).thenReturn(Optional.empty());
-        
-        assertThrows(UserNotFoundException.class, () -> workoutService.modifyWorkout("1", updatedWorkout));
-        assertEquals(0, user.getWorkouts().size());
-    }
+    void testModifyWorkout_UserNotFound() {
+        WorkoutInput input = new WorkoutInput();
+        when(userRepository.findByWorkoutId("badWorkoutId")).thenReturn(Optional.empty());
 
-    @Test
-    void testDeleteWorkout() throws Exception {
-        user.getWorkouts().add(workout);
-        when(userRepository.findByWorkoutId("1")).thenReturn(Optional.of(user));
-
-        assertEquals(true, workoutService.deleteWorkout("1"));
-        verify(userRepository, atMostOnce()).save(any(User.class));
-        assertEquals(0, user.getWorkouts().size());
-    }
-
-    @Test
-    void testDeleteWorkoutFailed() throws Exception {
-        user.getWorkouts().add(workout);
-        when(userRepository.findByWorkoutId("1")).thenReturn(Optional.empty());
-
-        assertEquals(false, workoutService.deleteWorkout("1"));
+        assertThrows(UserNotFoundException.class,
+                () -> workoutService.modifyWorkout("badWorkoutId", input));
+        verify(userRepository).findByWorkoutId("badWorkoutId");
         verify(userRepository, never()).save(any(User.class));
-        assertEquals(1, user.getWorkouts().size());
     }
 
     @Test
-    void testFindWorkout() throws Exception {
-        user.getWorkouts().add(workout);
-        when(userRepository.findByWorkoutId("1")).thenReturn(Optional.of(user));
-        Workout foundWorkout = workoutService.findWorkout("1");
+    void testModifyWorkout_WorkoutNotFound() {
+        WorkoutInput input = new WorkoutInput();
+        input.setWorkoutName("Doesn't matter");
 
-        assertEquals("1", foundWorkout.getId());
-        assertEquals("Test Workout", foundWorkout.getWorkoutName());
+        when(userRepository.findByWorkoutId("missingWorkoutId")).thenReturn(Optional.of(mockUser));
+
+        mockUser.getWorkouts().clear();
+
+        assertThrows(WorkoutNotFoundException.class,
+                () -> workoutService.modifyWorkout("missingWorkoutId", input));
+        verify(userRepository).findByWorkoutId("missingWorkoutId");
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    // Delete workout
+    @Test
+    void testDeleteWorkout_Success() {
+        when(userRepository.findByWorkoutId("workout123")).thenReturn(Optional.of(mockUser));
+        when(userRepository.save(any(User.class))).thenReturn(mockUser);
+
+        boolean result = workoutService.deleteWorkout("workout123");
+        assertTrue(result);
+
+        assertTrue(mockUser.getWorkouts().isEmpty());
+        verify(userRepository).findByWorkoutId("workout123");
+        verify(userRepository).save(mockUser);
     }
 
     @Test
-    void testFindWorkoutInvalidWorkoutId() throws Exception {
-        when(userRepository.findByWorkoutId("1")).thenReturn(Optional.of(user));
-
-        assertThrows(WorkoutNotFoundException.class, () -> workoutService.findWorkout("1"));
+    void testDeleteWorkout_NoUserFound() {
+        when(userRepository.findByWorkoutId("badWorkoutId")).thenReturn(Optional.empty());
+        boolean result = workoutService.deleteWorkout("badWorkoutId");
+        assertFalse(result);
+        verify(userRepository).findByWorkoutId("badWorkoutId");
+        verify(userRepository, never()).save(any(User.class));
     }
 
     @Test
-    void testFindWorkoutInvalidUsername() throws Exception {
-        when(userRepository.findByWorkoutId("1")).thenReturn(Optional.empty());
+    void testDeleteWorkout_WorkoutNotInList() {
+        when(userRepository.findByWorkoutId("nonExistentWorkout")).thenReturn(Optional.of(mockUser));
 
-        assertThrows(UserNotFoundException.class, () -> workoutService.findWorkout("1"));
+        mockUser.getWorkouts().clear();
+
+        boolean result = workoutService.deleteWorkout("nonExistentWorkout");
+        assertFalse(result);
+        verify(userRepository).findByWorkoutId("nonExistentWorkout");
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    // Find workout
+    @Test
+    void testFindWorkout_Success() throws Exception {
+        when(userRepository.findByWorkoutId("workout123")).thenReturn(Optional.of(mockUser));
+
+        Workout found = workoutService.findWorkout("workout123");
+        assertNotNull(found);
+        assertEquals("Sample Workout Title", found.getWorkoutName());
+        verify(userRepository).findByWorkoutId("workout123");
     }
 
     @Test
-    void testFindAllWorkouts() throws Exception {
-        user.getWorkouts().add(workout);
-        when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(user));
-        List<Workout> workoutList = workoutService.findAllWorkouts("testuser");
-
-        assertEquals(1, workoutList.size());
+    void testFindWorkout_NoUserFound() {
+        when(userRepository.findByWorkoutId("badWorkoutId")).thenReturn(Optional.empty());
+        assertThrows(UserNotFoundException.class, () -> workoutService.findWorkout("badWorkoutId"));
+        verify(userRepository).findByWorkoutId("badWorkoutId");
     }
 
     @Test
-    void testFindAllWorkoutsInvalidUsername() throws Exception {
-        when(userRepository.findByUsername("testuser")).thenReturn(Optional.empty());
+    void testFindWorkout_WorkoutNotFound() {
+        when(userRepository.findByWorkoutId("missingWorkoutId")).thenReturn(Optional.of(mockUser));
+        mockUser.getWorkouts().clear();
 
-        assertThrows(UserNotFoundException.class, () -> workoutService.findAllWorkouts("testuser"));
+        assertThrows(WorkoutNotFoundException.class, () -> workoutService.findWorkout("missingWorkoutId"));
+        verify(userRepository).findByWorkoutId("missingWorkoutId");
+    }
+
+    @Test
+    void testFindAllWorkouts_Success() throws Exception {
+        when(userRepository.findById("user123")).thenReturn(Optional.of(mockUser));
+
+        List<Workout> workouts = workoutService.findAllWorkouts("user123");
+        assertEquals(1, workouts.size());
+        assertEquals("workout123", workouts.get(0).getId());
+        verify(userRepository).findById("user123");
+    }
+
+    @Test
+    void testFindAllWorkouts_UserNotFound() {
+        when(userRepository.findById("noUser")).thenReturn(Optional.empty());
+
+        assertThrows(UserNotFoundException.class, () -> workoutService.findAllWorkouts("noUser"));
+        verify(userRepository).findById("noUser");
     }
 }

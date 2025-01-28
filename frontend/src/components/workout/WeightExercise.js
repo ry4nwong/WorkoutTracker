@@ -1,6 +1,5 @@
 import { MoreVertOutlined } from "@mui/icons-material";
-import { Box, Button, Dialog, DialogTitle, Grid, IconButton, List, ListItem, ListItemButton, ListItemText, Paper, TextField } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
+import { Box, Button, Dialog, DialogTitle, Grid, IconButton, List, ListItem, ListItemButton, ListItemText, Paper, TextField, Table, TableContainer, TableHead, TableRow, TableCell, TableBody, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 
 const WeightExercise = ({ exercise, setExercise, updateTotalVolume, removeExercise, index }) => {
@@ -14,6 +13,7 @@ const WeightExercise = ({ exercise, setExercise, updateTotalVolume, removeExerci
 
     const handleAddSet = () => {
         setSets(prevSets => [...prevSets, { id: sets.length + 1, weight: '0', reps: '0' }]);
+        console.log(exercise);
     };
 
     const handleRemoveSet = (setId) => {
@@ -34,42 +34,73 @@ const WeightExercise = ({ exercise, setExercise, updateTotalVolume, removeExerci
     };
 
     return (
-        <Paper sx={{ width: '100%', bgcolor: 'background.default' }} elevation={0}>
-            <Grid container>
-                <Grid item xs={11.5}>
-                    <ListItemText primary={exercise.exerciseName} />
-                </Grid>
-                <Grid item xs={0.5}>
-                    <IconButton onClick={() => setShowSettings(true)}>
-                        <MoreVertOutlined />
-                    </IconButton>
-                </Grid>
-            </Grid>
-            <TextField label="Notes" style={{ width: '100%' }} onBlur={(e) => setDescription(e.target.value)}></TextField>
-            <DataGrid
-                rows={sets}
-                columns={[
-                    { field: 'id', headerName: 'Set', sortable: false, filterable: false, width: 150, headerAlign: 'center', align: 'center' },
-                    { field: 'weight', headerName: 'Weight (lbs)', sortable: false, filterable: false, width: 150, editable: true, headerAlign: 'center', align: 'center' },
-                    { field: 'reps', headerName: 'Reps', sortable: false, filterable: false, width: 150, editable: true, headerAlign: 'center', align: 'center' },
-                    {
-                        renderCell: (params) => (
-                            <Button onClick={() => handleRemoveSet(params.row.id)}>Remove</Button>
-                        ),
-                        sortable: false,
-                        filterable: false,
-                        width: 150,
-                        align: 'center'
-                    },
-                ]}
-                disableColumnMenu
-                hideFooter
-                processRowUpdate={(updatedRow) => handleRowEdit(updatedRow, exercise)}
-                onProcessRowUpdateError={(error) => console.log(error)}
-                disableColumnResize
-                autoHeight
-            />
-            <Box>
+        <Paper sx={{ width: '100%', bgcolor: 'background.default', padding: 2 }} elevation={0}>
+            <TableContainer>
+                <Table sx={{ borderCollapse: 'collapse' }}>
+                    <TableHead>
+                        <TableRow sx={{ borderBottom: 'none' }}>
+                            <TableCell colSpan={4} sx={{ fontWeight: 'bold', fontSize: '20px', borderBottom: 'none', paddingBottom: 0 }}>
+                                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <Typography variant="body1" sx={{ fontWeight: 'bold' }}>{exercise.exerciseName}</Typography>
+                                    <IconButton onClick={() => setShowSettings(true)}>
+                                        <MoreVertOutlined />
+                                    </IconButton>
+                                </Box>
+                            </TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        <TableRow sx={{ borderBottom: 'none' }}>
+                            <TableCell colSpan={4} sx={{ borderBottom: 'none', paddingTop: 0 }}>
+                                <TextField
+                                    label="Notes"
+                                    fullWidth
+                                    variant="standard"
+                                    InputProps={{ disableUnderline: true }}
+                                    onBlur={(e) => setDescription(e.target.value)}
+                                />
+                            </TableCell>
+                        </TableRow>
+                        <TableRow sx={{ borderBottom: 'none' }}>
+                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>Set</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>Weight (lbs)</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>Reps</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>Action</TableCell>
+                        </TableRow>
+                        {sets.map((set) => (
+                            <TableRow key={set.id} sx={{ borderBottom: 'none' }}>
+                                <TableCell align="center" sx={{ borderBottom: 'none' }}>{set.id}</TableCell>
+                                <TableCell align="center" sx={{ borderBottom: 'none' }}>
+                                    <TextField
+                                        type="number"
+                                        value={set.weight}
+                                        sx={{ textAlign: 'center', '& input': { textAlign: 'center' } }}
+                                        variant="standard"
+                                        InputProps={{ inputProps: { min: 0 }, disableUnderline: true }}
+                                        onChange={(e) => handleRowEdit({ ...set, weight: e.target.value }, exercise)}
+                                        fullWidth
+                                    />
+                                </TableCell>
+                                <TableCell align="center" sx={{ borderBottom: 'none' }}>
+                                    <TextField
+                                        type="number"
+                                        value={set.reps}
+                                        sx={{ textAlign: 'center', '& input': { textAlign: 'center' } }}
+                                        variant="standard"
+                                        InputProps={{ inputProps: { min: 0 }, disableUnderline: true }}
+                                        onChange={(e) => handleRowEdit({ ...set, reps: e.target.value }, exercise)}
+                                        fullWidth
+                                    />
+                                </TableCell>
+                                <TableCell align="center" sx={{ borderBottom: 'none' }}>
+                                    <Button onClick={() => handleRemoveSet(set.id)}>Remove</Button>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+            <Box sx={{ marginTop: 2 }}>
                 <Button
                     variant="outlined"
                     color="primary"
