@@ -27,6 +27,7 @@ The Workout Tracker is a comprehensive fitness management tool designed to help 
 - [![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://react.dev/)
 - [![Mongo DB Atlas](https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/products/platform/atlas-database)
 - [![Material UI](https://img.shields.io/badge/Material--UI-0081CB?style=for-the-badge&logo=material-ui&logoColor=white)](https://mui.com/material-ui/)
+- [![GraphQL](https://img.shields.io/badge/GraphQl-E10098?style=for-the-badge&logo=graphql&logoColor=white)](https://graphql.org/)
 
 ## Features
 
@@ -34,9 +35,9 @@ The Workout Tracker is a comprehensive fitness management tool designed to help 
   - User registration and login.
   - Password hashing with Bcrypt for enhanced security.
 
-<!-- - **User Profile Management**
+- **User Profile Management**
   - Update user profile information.
-  - Handle user-specific settings and preferences. -->
+  - Handle user-specific settings and preferences.
 
 - **Workout Management**
   - Create, update, view, and delete workouts.
@@ -47,11 +48,10 @@ The Workout Tracker is a comprehensive fitness management tool designed to help 
   - Filter workouts by date and volume.
 
 - **API Endpoints**
-  - RESTful API for all CRUD operations on users and workouts.
+  - GraphQL API for all CRUD operations on users and workouts.
 
 - **Testing and Debugging**
   - Unit tests for Spring Boot service and controller layers.
-  - Integration tests for API endpoints.
   - Full code coverage verified through reports with JaCoCo for code reliability.
 
 - **Progress Tracking**
@@ -75,24 +75,15 @@ Follow these steps to set up and run the project locally.
    git clone https://github.com/ry4nwong/WorkoutTracker.git
    cd WorkoutTracker
    ```
-2. Install NPM packages
-   ```sh
-   npm install
-   ```
-3. Enter your driver connection string (step 2 of **Prerequisites**) in `backend/src/main/resources/application.properties`
+2. Enter your driver connection string (step 2 of **Prerequisites**) in a file called `.env`.
    ```vim
-   spring.data.mongodb.uri='YOUR_CONNECTION_STRING'
+   DB_URI='YOUR_CONNECTION_STRING'
    ```
-4. Start the Spring Boot application
+3. Start the application
    ```sh
-   cd backend
-   ./mvnw spring-boot:run
+   docker-compose up --build
    ```
-5. In another window, run the React application
-   ```sh
-   cd WorkoutTracker/frontend
-   npm start
-   ```
+4. Access the application at http://localhost:3000
 
 ## Contact
 Ryan Wong - [LinkedIn](https://www.linkedin.com/in/ryanwong20) - rnwong2002@gmail.com
