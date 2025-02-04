@@ -155,13 +155,33 @@ const WorkoutFeed = () => {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {workout.exercises.map((exercise) => (
+                                {workout.exercises.slice(0, 3).map((exercise) => (
                                     <TableRow key={exercise.id}>
-                                        <TableCell sx={{ fontSize: '14px' }}>{exercise.exerciseName}</TableCell>
-                                        <TableCell sx={{ fontSize: '14px', textAlign: 'center', width: '200px' }}>{exercise.sets.length}</TableCell>
+                                        <TableCell sx={{ fontSize: '14px' }}>
+                                            {exercise.exerciseName}
+                                        </TableCell>
+                                        <TableCell
+                                            sx={{
+                                                fontSize: '14px',
+                                                textAlign: 'center',
+                                                width: '200px'
+                                            }}
+                                        >
+                                            {exercise.sets.length}
+                                        </TableCell>
                                     </TableRow>
                                 ))}
+                                {workout.exercises.length > 3 && (
+                                    <TableRow>
+                                        <TableCell colSpan={2} sx={{ fontSize: '14px' }}>
+                                            {workout.exercises.length - 3 === 1
+                                                ? '1 more exercise...'
+                                                : `${workout.exercises.length - 3} more exercises...`}
+                                        </TableCell>
+                                    </TableRow>
+                                )}
                             </TableBody>
+
                         </Table>
                     </TableContainer>
                 </Box>
